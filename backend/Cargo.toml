@@ -1,0 +1,48 @@
+[package]
+name = "torrust"
+version = "0.1.0"
+authors = ["Mick <mick@dutchbits.nl>", "Wesley <wesley@dutchbits.nl"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+actix-web = "4.0.0-beta.8"
+actix-multipart = "0.4.0-beta.5"
+actix-cors = "0.6.0-beta.2"
+
+async-std = "1.10.0"
+futures = "0.3.5"
+
+lazy_static = "1.4"
+
+sqlx = { version = "0.5.7", features = [ "runtime-actix-rustls", "sqlite", "migrate", "time" ] }
+
+config = "0.11"
+
+derive_builder = "0.10"
+derive_more = "0.99"
+
+serde = "1"
+serde_derive = "1"
+serde_json = "1"
+serde_yaml = "0.8.17"
+serde_bencode = "0.2.3"
+serde_bytes = "0.11"
+
+pbkdf2 = "0.9"
+rand_core = { version = "0.6", features = ["std"] }
+
+sanitize-filename = "0.3.0"
+
+jsonwebtoken = "7.2.0"
+
+sha-1 = "0.9.8"
+binascii = "0.1"
+
+reqwest = { version = "0.11.4", features = [ "json" ] }
+
+tokio = {version = "1.7", features = ["macros", "io-util", "net", "time", "rt-multi-thread", "fs", "sync", "signal"]}
+
+lettre = { version = "0.10.0-rc.3", features = ["builder", "tokio1", "tokio1-rustls-tls", "smtp-transport"]}
+sailfish = "0.3.3"

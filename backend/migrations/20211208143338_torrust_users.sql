@@ -1,0 +1,2 @@
+ALTER TABLE torrust_users
+ADD COLUMN administrator BOOLEAN NOT NULL DEFAULT FALSE;
