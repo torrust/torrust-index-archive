@@ -9,11 +9,24 @@ on:
 env:
   CARGO_TERM_COLOR: always
 
-jobs:
-  test-backend:
+jobs:    
+  tests:
     runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: sqlite://data.db?mode=rwc
     steps:
     - uses: actions/checkout@v2
-    - name: Run tests
+    
+    - name: Install sqlx-cli
       working-directory: ./backend
-      run: cargo test --verbose
+      run: cargo install sqlx-cli
+      
+    - name: Setup backend database
+      working-directory: ./backend
+      run: |
+        sqlx db create
+        sqlx mig run
+    
+    - name: Run backend tests
+      working-directory: ./backend
+      run: cargo test
