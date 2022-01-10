@@ -25,6 +25,12 @@ jobs:
       - uses: Swatinem/rust-cache@v1
         with:
           working-directory: ./backend
+      - name: Install sqlx-cli
+        run: cargo install sqlx-cli
+      - name: Setup backend database
+        run: |
+          sqlx db create
+          sqlx mig run
       - name: Build backend
         run: cargo build --release
       - name: Upload backend build artifact
