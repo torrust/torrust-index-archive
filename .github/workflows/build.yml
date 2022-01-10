@@ -14,6 +14,7 @@ jobs:
       run:
         working-directory: ./backend
     env:
+      DATABASE_URL: sqlite://data.db?mode=rwc
       CARGO_TERM_COLOR: always
     steps:
       - uses: actions/checkout@v2
