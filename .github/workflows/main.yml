@@ -14,7 +14,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: Change to backend folder
-      run: cd backend
     - name: Run tests
+      working-directory: ./backend
       run: cargo test --verbose
