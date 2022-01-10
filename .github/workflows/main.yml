@@ -17,6 +17,15 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     
+    - uses: actions-rs/toolchain@v1
+      with:
+        profile: minimal
+        toolchain: stable
+
+    - uses: Swatinem/rust-cache@v1
+      with:
+        working-directory: ./backend
+    
     - name: Install sqlx-cli
       working-directory: ./backend
       run: cargo install sqlx-cli
