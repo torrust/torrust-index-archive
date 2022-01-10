@@ -37,9 +37,9 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: torrust-backend
-          path: ./target/release/torrust
+          path: ./backend/target/release/torrust
       - name: Upload backend config file
         uses: actions/upload-artifact@v2
         with:
           name: config.toml
-          path: config.toml
+          path: ./backend/config.toml
