@@ -64,17 +64,13 @@ impl Database {
         }
     }
 
-    pub async fn delete_user(&self, user_id: i64) -> Result<(), ()> {
-        let res = sqlx::query!(
+    pub async fn delete_user(&self, user_id: i64) -> Result<(), ServiceError> {
+        let _res = sqlx::query!(
             "DELETE FROM torrust_users WHERE rowid = ?",
             user_id
         )
             .execute(&self.pool)
             .await?;
-
-        if let Err(sqlx::Error::Database(err)) = res {
-            return Err(())
-        }
 
         Ok(())
     }

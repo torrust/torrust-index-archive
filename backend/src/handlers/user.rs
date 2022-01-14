@@ -100,9 +100,11 @@ pub async fn register(req: HttpRequest, payload: web::Json<Register>, app_data: 
         let user_id = res.unwrap().last_insert_rowid();
 
         if mail_res.is_err() {
-            app_data.database.delete_user(user_id).await;
+            let _ = app_data.database.delete_user(user_id).await;
             return Err(ServiceError::FailedToSendVerificationEmail)
         }
+    } else {
+
     }
 
     Ok(HttpResponse::Ok())
@@ -117,7 +119,7 @@ pub async fn login(payload: web::Json<Login>, app_data: WebAppData) -> ServiceRe
 
     match res {
         Some(user) => {
-            if !user.email_verified {
+            if app_data.cfg.mail.email_verification_enabled && !user.email_verified {
                 return Err(ServiceError::EmailNotVerified)
             }
 

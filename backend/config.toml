@@ -21,7 +21,7 @@ connect_url = "sqlite://data.db?mode=rwc"
 torrent_info_update_interval = 3600
 
 [mail]
-email_verification_enabled = true
+email_verification_enabled = false
 # SMTP server and port
 server = ""
 port = 25
