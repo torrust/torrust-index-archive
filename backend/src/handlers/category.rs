@@ -1,5 +1,4 @@
 use actix_web::{HttpResponse, Responder, web};
-use actix_web::web::Query;
 use serde::{Serialize, Deserialize};
 
 use crate::common::WebAppData;
@@ -36,20 +35,23 @@ pub struct CategoryCreate {
     pub name: String
 }
 
-pub async fn add_category(params: Query<CategoryCreate>, app_data: WebAppData) -> ServiceResult<impl Responder> {
+pub async fn add_category(payload: web::Json<CategoryCreate>, app_data: WebAppData) -> ServiceResult<impl Responder> {
     let res = sqlx::query!(
         "INSERT INTO torrust_categories (name) VALUES ($1)",
-        params.name,
+        payload.name,
     )
         .execute(&app_data.database.pool)
         .await;
 
-    match res {
-        Ok(_) => (),
-        Err(_) => return Err(ServiceError::InternalServerError),
-    };
+    if let Err(sqlx::Error::Database(err)) = res {
+        return if err.message().contains("UNIQUE") {
+            Err(ServiceError::CategoryExists)
+        } else {
+            Err(ServiceError::InternalServerError)
+        }
+    }
 
     Ok(HttpResponse::Ok().json(OkResponse {
-        data: params.name.clone()
+        data: payload.name.clone()
     }))
 }

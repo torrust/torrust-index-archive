@@ -102,6 +102,9 @@ pub enum ServiceError {
 
     #[display(fmt = "Failed to send the verification email.")]
     FailedToSendVerificationEmail,
+
+    #[display(fmt = "Category already exists..")]
+    CategoryExists,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -152,7 +155,11 @@ impl ResponseError for ServiceError {
 
             ServiceError::TrackerOffline => StatusCode::INTERNAL_SERVER_ERROR,
 
-            ServiceError::FailedToSendVerificationEmail => StatusCode::INTERNAL_SERVER_ERROR
+            ServiceError::FailedToSendVerificationEmail => StatusCode::INTERNAL_SERVER_ERROR,
+
+            ServiceError::CategoryExists => StatusCode::BAD_REQUEST,
+
+            _ => StatusCode::INTERNAL_SERVER_ERROR
         }
     }
 
@@ -171,7 +178,7 @@ impl ResponseError for ServiceError {
 
 impl From<sqlx::Error> for ServiceError {
     fn from(e: sqlx::Error) -> Self {
-        eprintln!("{}", e);
+        eprintln!("{:?}", e);
         ServiceError::InternalServerError
     }
 }
