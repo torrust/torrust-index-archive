@@ -1,3 +1,6 @@
+[website]
+name = "MyLabradorPage"
+
 [tracker]
 # tracker UDP url with PORT.
 url = "udp://localhost:6969"

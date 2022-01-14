@@ -11,7 +11,13 @@ use torrust::mailer::MailerService;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    let cfg = Arc::new(TorrustConfig::new().unwrap());
+    let cfg = match TorrustConfig::load_from_file() {
+        Ok(config) => Arc::new(config),
+        Err(error) => {
+            panic!("{}", error)
+        }
+    };
+
     let database = Arc::new(Database::new(&cfg.database.connect_url).await);
     let auth = Arc::new(AuthorizationService::new(cfg.clone(), database.clone()));
     let tracker_service = Arc::new(TrackerService::new(cfg.clone(), database.clone()));
