@@ -64,6 +64,21 @@ impl Database {
         }
     }
 
+    pub async fn delete_user(&self, user_id: i64) -> Result<(), ()> {
+        let res = sqlx::query!(
+            "DELETE FROM torrust_users WHERE rowid = ?",
+            user_id
+        )
+            .execute(&self.pool)
+            .await?;
+
+        if let Err(sqlx::Error::Database(err)) = res {
+            return Err(())
+        }
+
+        Ok(())
+    }
+
     pub async fn insert_torrent_and_get_id(&self, username: String, info_hash: String, title: String, category_id: i64, description: String, file_size: i64, seeders: i64, leechers: i64) -> Result<i64, ServiceError> {
         let current_time = current_time() as i64;
 

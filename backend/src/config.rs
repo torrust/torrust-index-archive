@@ -36,6 +36,7 @@ pub struct Storage {
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct Mail {
+    pub email_verification_enabled: bool,
     pub from: String,
     pub reply_to: String,
     pub username: String,

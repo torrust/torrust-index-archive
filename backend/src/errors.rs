@@ -100,7 +100,7 @@ pub enum ServiceError {
     #[display(fmt = "Sorry, we have an error with our tracker connection.")]
     TrackerOffline,
 
-    #[display(fmt = "Failed to send the verification email.")]
+    #[display(fmt = "Failed to send verification email.")]
     FailedToSendVerificationEmail,
 
     #[display(fmt = "Category already exists..")]
@@ -116,7 +116,6 @@ impl ResponseError for ServiceError {
     fn status_code(&self) -> StatusCode {
         match self {
             ServiceError::ClosedForRegistration => StatusCode::FORBIDDEN,
-            ServiceError::InternalServerError => StatusCode::INTERNAL_SERVER_ERROR,
             ServiceError::NotAnEmail => StatusCode::BAD_REQUEST,
             ServiceError::NotAUrl => StatusCode::BAD_REQUEST,
             ServiceError::WrongPasswordOrUsername => StatusCode::FORBIDDEN,
@@ -154,8 +153,6 @@ impl ResponseError for ServiceError {
             ServiceError::InfoHashAlreadyExists => StatusCode::BAD_REQUEST,
 
             ServiceError::TrackerOffline => StatusCode::INTERNAL_SERVER_ERROR,
-
-            ServiceError::FailedToSendVerificationEmail => StatusCode::INTERNAL_SERVER_ERROR,
 
             ServiceError::CategoryExists => StatusCode::BAD_REQUEST,
 

@@ -87,24 +87,23 @@ pub async fn register(req: HttpRequest, payload: web::Json<Register>, app_data: 
     }
 
     let conn_info = req.connection_info();
-    let mail_res = app_data.mailer.send_verification_mail(
-        &payload.email,
-        &payload.username,
-        format!("{}://{}", conn_info.scheme(), conn_info.host()).as_str()
-    )
-        .await;
 
-    let row_id = res.unwrap().last_insert_rowid();
-
-    if let Err(e) = mail_res {
-        sqlx::query!(
-            "DELETE FROM torrust_users WHERE rowid = ?",
-            row_id
+    if app_data.cfg.mail.email_verification_enabled {
+        // todo: congig to enable/disable email verification
+        let mail_res = app_data.mailer.send_verification_mail(
+            &payload.email,
+            &payload.username,
+            format!("{}://{}", conn_info.scheme(), conn_info.host()).as_str()
         )
-            .execute(&app_data.database.pool)
-            .await?;
+            .await;
 
-        return Err(e)
+        // get user id from user insert res
+        let user_id = res.unwrap().last_insert_rowid();
+
+        if mail_res.is_err() {
+            app_data.database.delete_user(user_id).await;
+            return Err(ServiceError::FailedToSendVerificationEmail)
+        }
     }
 
     Ok(HttpResponse::Ok())
