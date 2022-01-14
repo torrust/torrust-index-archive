@@ -116,7 +116,7 @@ export default {
         formData.append('category', this.form.category);
         formData.append('torrent', this.form.torrentFile);
         HttpService.post(`/torrent/upload`, formData, (res) => {
-          this.$router.push(`/categories/${this.form.category}/${res.data.data.torrent_id}`);
+          this.$router.push(`/torrent/${res.data.data.torrent_id}`);
         }).finally(() => {
           this.uploading = false;
         })
