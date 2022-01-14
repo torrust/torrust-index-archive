@@ -73,6 +73,7 @@ export default new class {
             errorString = errorJson.error;
         }
 
+        // should be the case when a request goes to the backend
         if (errorString.error) errorString = errorString.error;
 
         // console.log(error.request.responseType === 'blob');

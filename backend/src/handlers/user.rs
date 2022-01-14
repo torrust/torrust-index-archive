@@ -89,7 +89,6 @@ pub async fn register(req: HttpRequest, payload: web::Json<Register>, app_data: 
     let conn_info = req.connection_info();
 
     if app_data.cfg.mail.email_verification_enabled {
-        // todo: congig to enable/disable email verification
         let mail_res = app_data.mailer.send_verification_mail(
             &payload.email,
             &payload.username,

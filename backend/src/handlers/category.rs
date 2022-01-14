@@ -1,4 +1,4 @@
-use actix_web::{HttpResponse, Responder, web};
+use actix_web::{HttpRequest, HttpResponse, Responder, web};
 use serde::{Serialize, Deserialize};
 
 use crate::common::WebAppData;
@@ -35,7 +35,13 @@ pub struct CategoryCreate {
     pub name: String
 }
 
-pub async fn add_category(payload: web::Json<CategoryCreate>, app_data: WebAppData) -> ServiceResult<impl Responder> {
+pub async fn add_category(req: HttpRequest, payload: web::Json<CategoryCreate>, app_data: WebAppData) -> ServiceResult<impl Responder> {
+    // check for user
+    let user = app_data.auth.get_user_from_request(&req).await?;
+
+    // check if user is administrator
+    if !user.administrator { return Err(ServiceError::Unauthorized) }
+
     let res = sqlx::query!(
         "INSERT INTO torrust_categories (name) VALUES ($1)",
         payload.name,
