@@ -13,7 +13,7 @@
           <li v-for="(category, index) in categories" :key="index">
             <div class="py-2 px-4 mt-2 bg-primary rounded-xl flex flex-row">
               <span class="text-white">{{ category.name }} ({{ category.num_torrents }})</span>
-              <a class="ml-auto px-3 rounded-lg bg-red-500 bg-opacity-10 text-red-400 hover:text-red-500 text-center cursor-pointer">
+              <a @click="deleteCategory(category.name)" class="ml-auto px-3 rounded-lg bg-red-500 bg-opacity-10 text-red-400 hover:text-red-500 text-center cursor-pointer">
                 X
               </a>
             </div>
@@ -90,6 +90,12 @@ export default {
         }).catch(() => {
         });
       }
+    },
+    deleteCategory(category) {
+      HttpService.delete(`/category`, { name: category }, () => {
+        this.$store.dispatch('getCategories');
+      }).catch(() => {
+      });
     },
   }
 }

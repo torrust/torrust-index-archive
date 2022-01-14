@@ -5,7 +5,6 @@ use crate::errors::ServiceError;
 use crate::models::torrent::TorrentListing;
 use crate::utils::time::current_time;
 use crate::models::tracker_key::TrackerKey;
-use std::borrow::Cow;
 use serde::Serialize;
 
 #[derive(Debug, Serialize)]
@@ -64,7 +63,7 @@ impl Database {
         }
     }
 
-    pub async fn delete_user(&self, user_id: i64) -> Result<(), ServiceError> {
+    pub async fn delete_user(&self, user_id: i64) -> Result<(), sqlx::Error> {
         let _res = sqlx::query!(
             "DELETE FROM torrust_users WHERE rowid = ?",
             user_id
@@ -75,7 +74,7 @@ impl Database {
         Ok(())
     }
 
-    pub async fn insert_torrent_and_get_id(&self, username: String, info_hash: String, title: String, category_id: i64, description: String, file_size: i64, seeders: i64, leechers: i64) -> Result<i64, ServiceError> {
+    pub async fn insert_torrent_and_get_id(&self, username: String, info_hash: String, title: String, category_id: i64, description: String, file_size: i64, seeders: i64, leechers: i64) -> Result<i64, sqlx::Error> {
         let current_time = current_time() as i64;
 
         let res = sqlx::query!(
@@ -93,21 +92,9 @@ impl Database {
             leechers
         )
             .fetch_one(&self.pool)
-            .await;
+            .await?;
 
-        if let Err(sqlx::Error::Database(err)) = res {
-            return if err.code() == Some(Cow::from("2067")) {
-                if err.message().contains("torrust_torrents.info_hash") {
-                    Err(ServiceError::InfoHashAlreadyExists)
-                } else {
-                    Err(ServiceError::InternalServerError)
-                }
-            } else {
-                Err(ServiceError::TorrentNotFound)
-            }
-        }
-
-        Ok(res.unwrap().torrent_id)
+        Ok(res.torrent_id)
     }
 
     pub async fn get_torrent_by_id(&self, torrent_id: i64) -> Result<TorrentListing, ServiceError> {

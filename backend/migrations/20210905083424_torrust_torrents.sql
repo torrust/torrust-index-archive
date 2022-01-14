@@ -9,6 +9,6 @@ CREATE TABLE IF NOT EXISTS torrust_torrents (
     file_size BIGINT NOT NULL,
     seeders INTEGER NOT NULL,
     leechers INTEGER NOT NULL,
-    FOREIGN KEY(uploader) REFERENCES torrust_users(username),
-    FOREIGN KEY(category_id) REFERENCES torrust_categories(category_id)
+    FOREIGN KEY(uploader) REFERENCES torrust_users(username) ON DELETE CASCADE,
+    FOREIGN KEY(category_id) REFERENCES torrust_categories(category_id) ON DELETE CASCADE
 )

@@ -10,7 +10,9 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
         web::scope("/category")
             .service(web::resource("")
                 .route(web::get().to(get_categories))
-                .route(web::post().to(add_category)))
+                .route(web::post().to(add_category))
+                .route(web::delete().to(delete_category))
+            )
     );
 }
 
@@ -31,11 +33,11 @@ pub async fn get_categories(app_data: WebAppData) -> ServiceResult<impl Responde
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct CategoryCreate {
+pub struct Category {
     pub name: String
 }
 
-pub async fn add_category(req: HttpRequest, payload: web::Json<CategoryCreate>, app_data: WebAppData) -> ServiceResult<impl Responder> {
+pub async fn add_category(req: HttpRequest, payload: web::Json<Category>, app_data: WebAppData) -> ServiceResult<impl Responder> {
     // check for user
     let user = app_data.auth.get_user_from_request(&req).await?;
 
@@ -56,6 +58,25 @@ pub async fn add_category(req: HttpRequest, payload: web::Json<CategoryCreate>, 
             Err(ServiceError::InternalServerError)
         }
     }
+
+    Ok(HttpResponse::Ok().json(OkResponse {
+        data: payload.name.clone()
+    }))
+}
+
+pub async fn delete_category(req: HttpRequest, payload: web::Json<Category>, app_data: WebAppData) -> ServiceResult<impl Responder> {
+    // check for user
+    let user = app_data.auth.get_user_from_request(&req).await?;
+
+    // check if user is administrator
+    if !user.administrator { return Err(ServiceError::Unauthorized) }
+
+    let _res = sqlx::query!(
+        "DELETE FROM torrust_categories WHERE name = $1",
+        payload.name,
+    )
+        .execute(&app_data.database.pool)
+        .await?;
 
     Ok(HttpResponse::Ok().json(OkResponse {
         data: payload.name.clone()

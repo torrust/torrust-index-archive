@@ -43,10 +43,10 @@ export default new class {
         return axios.post(url, data).then(callback).catch(this.errorHandler);
     }
 
-    delete(url, callback) {
+    delete(url, data, callback) {
         this.setToken();
 
-        return axios.delete(url).then(callback).catch(this.errorHandler);
+        return axios.delete(url, { data }).then(callback).catch(this.errorHandler);
     }
 
     async errorHandler(error) {

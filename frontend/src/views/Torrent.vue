@@ -112,7 +112,7 @@ export default {
     },
     deleteTorrent() {
       const self = this;
-      HttpService.delete(`/torrent/${this.torrent.torrent_id}`, () => {
+      HttpService.delete(`/torrent/${this.torrent.torrent_id}`, {}, () => {
         Vue.notify({
           title: 'Deleted',
           text: 'Torrent deleted successfully.',
