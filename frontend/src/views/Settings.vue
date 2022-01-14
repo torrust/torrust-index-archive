@@ -85,7 +85,7 @@ export default {
   methods: {
     addCategory() {
       if (this.newCategory) {
-        HttpService.post(`/category?name=${this.newCategory}`, () => {
+        HttpService.post(`/category`, { name: this.newCategory }, () => {
           this.$store.dispatch('getCategories');
         }).catch(() => {
         });
