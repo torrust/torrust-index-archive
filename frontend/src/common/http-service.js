@@ -73,6 +73,8 @@ export default new class {
             errorString = errorJson.error;
         }
 
+        if (errorString.error) errorString = errorString.error;
+
         // console.log(error.request.responseType === 'blob');
         // console.log(res.data.text())
         Vue.notify({
