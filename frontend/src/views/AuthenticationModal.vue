@@ -6,7 +6,7 @@
   >
     <div class="mx-auto mt-8 w-11/12 sm:w-full sm:max-w-md">
       <div
-          class="px-4 py-8 bg-white rounded-lg shadow sm:px-10"
+          class="px-4 py-8 bg-secondary rounded-lg shadow sm:px-10"
       >
         <transition
             enter-active-class="transition ease-out duration-100 transform"
@@ -16,8 +16,8 @@
             leave-class="opacity-100 scale-100"
             leave-to-class="opacity-0 scale-95"
         >
-          <h2 v-if="isSignUp" class="text-2xl mb-4 text-center">Sign Up</h2>
-          <h2 v-else class="text-2xl mb-4 text-center">Sign In</h2>
+          <h2 v-if="isSignUp" class="text-2xl mb-4 text-center text-white">Sign Up</h2>
+          <h2 v-else class="text-2xl mb-4 text-center text-white">Sign In</h2>
         </transition>
 
         <form
@@ -33,19 +33,20 @@
               leave-to-class="opacity-0 scale-95"
           >
             <div v-if="isSignUp">
-              <label for="password" class="inline text-sm font-medium text-gray-700">
+              <label for="password" class="inline text-sm font-medium text-white">
                 Username
               </label>
               <div class="mt-1">
                 <input v-model="form.username"
                        id="username" name="username" type="text"
-                       required class="form-style">
+                       required
+                       class="form-style text-black">
               </div>
             </div>
           </transition>
 
           <div>
-            <label for="email" class="block text-sm font-medium text-gray-700">
+            <label for="email" class="block text-sm font-medium text-white">
               {{ !isSignUp ? 'Username or ' : '' }} Email address
             </label>
             <div class="mt-1">
@@ -57,7 +58,7 @@
 
           <div>
             <div class="flex justify-between">
-              <label for="password" class="inline text-sm font-medium text-gray-700">
+              <label for="password" class="inline text-sm font-medium text-white">
                 Password
               </label>
               <!--              <div v-if="!isSignUp" class="mt-2 text-xs text-right">-->
@@ -83,7 +84,7 @@
               leave-to-class="opacity-0 scale-95"
           >
             <div v-if="isSignUp">
-              <label for="password" class="inline text-sm font-medium text-gray-700">
+              <label for="password" class="inline text-sm font-medium text-white">
                 Confirm password
               </label>
               <div class="mt-1">
@@ -96,20 +97,17 @@
 
           <div>
             <button type="submit"
-                    class="flex justify-center px-4 py-2 w-full text-sm font-medium text-white rounded-md border border-transparent shadow-sm bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 ">
+                    class="flex justify-center px-4 py-2 w-full text-sm font-medium rounded-md border border-transparent shadow-sm bg-red-500 hover:bg-red-400 text-white focus:outline-none focus:ring-2 focus:ring-offset-2 ">
               Sign {{ isSignUp ? 'up' : 'in' }}
             </button>
           </div>
         </form>
         <div class="relative mt-4">
-          <div class="flex absolute inset-0 items-center">
-            <div class="w-full border-t border-gray-300"></div>
-          </div>
           <div class="flex relative justify-center text-sm">
-            <button v-if="isSignUp" class="px-2 text-blue-500 bg-white" @click="toggleMode">
+            <button v-if="isSignUp" class="px-2 text-blue-500 font-bold" @click="toggleMode">
               Already have an account? Sign in
             </button>
-            <button v-else class="px-2 text-blue-500 bg-white" @click="toggleMode">
+            <button v-else class="px-2 text-blue-500 font-bold" @click="toggleMode">
               Don't have an account? Sign up
             </button>
           </div>
