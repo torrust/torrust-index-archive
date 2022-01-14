@@ -214,3 +214,10 @@ impl From<Box<dyn error::Error>> for ServiceError {
         ServiceError::InternalServerError
     }
 }
+
+impl From<serde_json::Error> for ServiceError {
+    fn from(e: serde_json::Error) -> Self {
+        eprintln!("{}", e);
+        ServiceError::InternalServerError
+    }
+}

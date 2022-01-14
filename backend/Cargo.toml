@@ -19,11 +19,12 @@ lazy_static = "1.4"
 sqlx = { version = "0.5.7", features = [ "runtime-actix-rustls", "sqlite", "migrate", "time" ] }
 
 config = "0.11"
+toml = "0.5"
 
 derive_builder = "0.10"
 derive_more = "0.99"
 
-serde = "1"
+serde = { version = "1.0", features = ["rc"] }
 serde_derive = "1"
 serde_json = "1"
 serde_yaml = "0.8.17"

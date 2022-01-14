@@ -2708,6 +2708,7 @@ dependencies = [
  "sha-1",
  "sqlx",
  "tokio",
+ "toml",
 ]
 
 [[package]]
