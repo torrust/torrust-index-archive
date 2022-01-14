@@ -1,3 +1,4 @@
+use std::borrow::Cow;
 use derive_more::{Display, Error};
 use actix_web::{ResponseError, HttpResponse, HttpResponseBuilder};
 use actix_web::http::{header, StatusCode};
@@ -148,7 +149,7 @@ impl ResponseError for ServiceError {
 
             ServiceError::InvalidCategory => StatusCode::BAD_REQUEST,
 
-            ServiceError::Unauthorized => StatusCode::UNAUTHORIZED,
+            ServiceError::Unauthorized => StatusCode::FORBIDDEN,
 
             ServiceError::InfoHashAlreadyExists => StatusCode::BAD_REQUEST,
 
@@ -176,6 +177,19 @@ impl ResponseError for ServiceError {
 impl From<sqlx::Error> for ServiceError {
     fn from(e: sqlx::Error) -> Self {
         eprintln!("{:?}", e);
+
+        if let Some(err) = e.as_database_error() {
+            return if err.code() == Some(Cow::from("2067")) {
+                if err.message().contains("torrust_torrents.info_hash") {
+                    ServiceError::InfoHashAlreadyExists
+                } else {
+                    ServiceError::InternalServerError
+                }
+            } else {
+                ServiceError::TorrentNotFound
+            }
+        }
+
         ServiceError::InternalServerError
     }
 }
