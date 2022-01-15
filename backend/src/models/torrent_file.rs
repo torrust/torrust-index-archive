@@ -66,16 +66,12 @@ impl Torrent {
 
         self.announce = Some(settings.tracker.url.clone());
 
-        drop(settings);
-
-        // if let Some(list) = &mut self.announce_list {
-        //     let mut vec = Vec::new();
-        //     vec.push(cfg.tracker.url.clone());
-        //     list.insert(0, vec);
-        // }
-
-        // todo: config option to remove other trackers from uploaded torrent files
-        self.announce_list = None;
+        // if torrent is private, remove all other trackers
+        if let Some(private) = self.info.private {
+            if private == 1 {
+                self.announce_list = None;
+            }
+        }
     }
 
     pub fn calculate_info_hash_as_bytes(&self) -> [u8; 20] {
