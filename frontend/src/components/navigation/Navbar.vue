@@ -26,7 +26,7 @@
       </div>
 
       <!-- right navbar -->
-      <div v-if="loggedIn" class="flex justify-between items-center space-x-4">
+      <div v-if="$store.getters.isLoggedIn" class="flex justify-between items-center space-x-4">
         <router-link to="/upload" class="button leading-10">
           Upload torrent
         </router-link>
@@ -49,9 +49,7 @@ export default {
   name: 'Navbar',
   components: {Profile},
   computed: {
-    ...mapState({
-      loggedIn: state => state.auth.loggedIn
-    })
+    ...mapState({})
   },
   data: () => ({
     searchQuery: ''

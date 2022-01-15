@@ -1,15 +1,17 @@
 import Vue from "vue";
 import HttpService from "@/common/http-service";
 
-const userToken = localStorage.getItem('userToken') || '';
-const user = localStorage.getItem('user') || '';
-const admin = localStorage.getItem('admin') || false;
+const USER = {
+    token: '',
+    username: '',
+    admin: false,
+}
+
+const user_encoded = localStorage.getItem('user');
+const user = user_encoded ? JSON.parse(user_encoded) : { ...USER };
 
 const initialState = {
-    userToken: userToken,
-    user: user,
-    loggedIn: !!(userToken && user),
-    administrator: admin
+    user: user
 };
 
 export default {
@@ -22,25 +24,23 @@ export default {
             return state.authModalOpen;
         },
         isLoggedIn: state => {
-            return state.loggedIn;
+            return !!(state.user.token && state.user.username);
         },
         isAdministrator: state => {
-            return state.administrator;
+            return state.user.admin;
+        },
+        getToken: (state, getters) => {
+            return getters.isLoggedIn ? state.user.token : '';
         },
     },
     mutations: {
         setAuthModal(state, opened) {
             state.authModalOpen = opened
         },
-        authSuccess(state, {token, username, admin}) {
-            state.loggedIn = true;
-            state.userToken = token;
-            state.user = username;
-            state.administrator = admin;
+        authSuccess(state, data) {
+            state.user = data;
 
-            localStorage.setItem('userToken', token);
-            localStorage.setItem('user', username);
-            localStorage.setItem('admin', admin);
+            localStorage.setItem('user', JSON.stringify(data));
 
             Vue.notify({
                 title: 'Authentication',
@@ -49,12 +49,9 @@ export default {
             });
         },
         logout(state) {
-            state.loggedIn = false;
-            state.userToken = '';
+            state.user = { ...USER }
 
-            localStorage.removeItem('userToken');
-
-
+            localStorage.removeItem('user');
         }
     },
     actions: {
@@ -62,7 +59,7 @@ export default {
             HttpService.post('/user/login', data, (res) => {
                 const data = res.data.data;
 
-                commit('authSuccess', {token: data.token, username: data.username, admin: data.admin});
+                commit('authSuccess', data);
                 dispatch('closeAuthModal');
             });
         },

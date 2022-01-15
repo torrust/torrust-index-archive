@@ -12,14 +12,7 @@
         </div>
 
         <div v-if="isAdmin" class="pb-5">
-          <button type="button" @click="deleteTorrent"
-                  class="text-white bg-red-600 border-transparent shadow-sm button hover:bg-red-500">
-            Delete torrent
-          </button>
-          <button type="button"
-                  class="ml-2 text-white bg-blue-600 border-transparent shadow-sm button hover:bg-blue-500">
-            Edit description
-          </button>
+
         </div>
 
         <div class="p-4 bg-primary text-gray-300 rounded-3xl flex flex-col lg:flex-row justify-center items-center w-full overflow-auto">
@@ -27,8 +20,12 @@
             <div class="px-2 text-gray-300 text-sm">Seeders: <span class="text-green-500">{{ torrent.seeders }}</span></div>
             <div class="px-2 text-gray-300 text-sm">Leechers: <span class="text-red-500">{{ torrent.leechers }}</span></div>
           </div>
+          <button v-if="isAdmin" type="button" @click="deleteTorrent"
+                  class="ml-0 lg:ml-auto text-white bg-red-600 border-transparent shadow-sm button hover:bg-red-500">
+            Delete torrent
+          </button>
           <button type="button" @click="downloadTorrent"
-                  class="ml-0 lg:ml-auto text-white bg-green-600 border-transparent shadow-sm button hover:bg-green-500">
+                  class="ml-0 lg:ml-2 text-white bg-green-600 border-transparent shadow-sm button hover:bg-green-500">
             <DownloadIcon class="mr-2 -ml-1 w-5 h-5"/>
             Torrent file
           </button>
@@ -48,6 +45,10 @@
         </div>
 
         <h2 class="p-4 text-gray-300">Torrent Description</h2>
+        <button v-if="isAdmin || isOwner" type="button"
+                class="mb-2 text-white bg-blue-600 border-transparent shadow-sm button hover:bg-blue-500">
+          Edit description
+        </button>
         <div class="p-4 bg-primary text-gray-300 rounded-3xl flex flex-col w-full overflow-auto">
           <div v-html="compiledMarkdown" class="max-w-none prose-sm prose-blue"></div>
         </div>
@@ -61,6 +62,7 @@ import MarkdownIt from 'markdown-it';
 import {XIcon, DownloadIcon} from "@vue-hero-icons/outline";
 import HttpService from "@/common/http-service";
 import Vue from "vue";
+import {mapState} from "vuex";
 
 export default {
   name: "TorrentDetail",
@@ -135,8 +137,14 @@ export default {
     }
   },
   computed: {
+    ...mapState({
+      user: state => state.auth.user,
+    }),
     isAdmin() {
       return this.$store.getters.isAdministrator;
+    },
+    isOwner() {
+      return this.user.username === this.torrent.uploader;
     },
     torrentId() {
       return this.$route.params.torrentId;

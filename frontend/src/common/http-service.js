@@ -22,7 +22,7 @@ export default new class {
     }
 
     setToken() {
-        const token = store.state.auth.userToken;
+        const token = store.getters.getToken;
         if (token) {
             axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
         }
