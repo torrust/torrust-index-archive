@@ -243,20 +243,19 @@ pub async fn upload_torrent(req: HttpRequest, payload: Multipart, app_data: WebA
         leechers = torrent_info.leechers;
     }
 
-    // println!("{:?}", (&username, &info_hash, &title, &category, &description, &current_time, &file_size));
-
     let torrent_id = app_data.database.insert_torrent_and_get_id(username, info_hash, title, row.category_id, description, file_size, seeders, leechers).await?;
 
     // whitelist info hash on tracker
-    let _r = app_data.tracker.whitelist_info_hash(torrent_request.torrent.info_hash()).await;
+    let _ = app_data.tracker.whitelist_info_hash(torrent_request.torrent.info_hash()).await;
 
     let settings = app_data.cfg.settings.read().await;
 
-    let filepath = format!("{}/{}", settings.storage.upload_path, torrent_id.to_string() + ".torrent");
+    let upload_folder = settings.storage.upload_path.clone();
+    let filepath = format!("{}/{}", upload_folder, torrent_id.to_string() + ".torrent");
 
     drop(settings);
 
-    save_torrent_file(&filepath, &torrent_request.torrent).await?;
+    save_torrent_file(&upload_folder, &filepath, &torrent_request.torrent).await?;
 
     Ok(HttpResponse::Ok().json(OkResponse {
         data: NewTorrentResponse {
@@ -319,11 +318,14 @@ pub async fn download_torrent(req: HttpRequest, app_data: WebAppData) -> Service
 //     }
 // }
 
-async fn save_torrent_file(filepath: &str, torrent: &Torrent) -> Result<(), ServiceError> {
+async fn save_torrent_file(upload_folder: &str, filepath: &str, torrent: &Torrent) -> Result<(), ServiceError> {
     let torrent_bytes = match parse_torrent::encode_torrent(torrent) {
         Ok(v) => Ok(v),
         Err(_) => Err(ServiceError::InternalServerError)
     }?;
+
+    // create torrent upload folder if it does not exist
+    async_std::fs::create_dir_all(&upload_folder).await?;
 
     let mut f = match async_std::fs::File::create(&filepath).await {
         Ok(v) => Ok(v),
