@@ -11,6 +11,9 @@ import Toast from "@/components/Toast";
 export default {
   name: 'App',
   components: {Toast},
+  beforeMount() {
+    this.$store.dispatch('getSiteName')
+  }
 }
 </script>
 

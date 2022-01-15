@@ -64,6 +64,11 @@ export default new Vuex.Store({
         },
         setSettings(state, settings) {
             Vue.set(state, 'settings', settings);
+            window.document.title = settings.website.name;
+        },
+        setSiteName(state, name) {
+            state.settings.website.name = name;
+            window.document.title = name;
         },
     },
     actions: {
@@ -86,9 +91,13 @@ export default new Vuex.Store({
         getSettings({commit}) {
             HttpService.get('/settings', (res) => {
                 commit('setSettings', res.data.data);
-                window.document.title = res.data.data.website.name;
             }).catch(() => {});
-        }
+        },
+        getSiteName({commit}) {
+            HttpService.get('/settings/name', (res) => {
+                commit('setSiteName', res.data.data);
+            }).catch(() => {});
+        },
     },
     modules: {
         auth: authStore
