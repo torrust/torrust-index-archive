@@ -1,10 +1,31 @@
 <template>
   <div>
-    <h1 class="view-title text-white">Site Settings</h1>
-    <button @click="saveSettings" :disabled="settingsChanged || savingSettings" class="changes bg-blue-500 disabled:opacity-50">Save Changes</button>
-    <button @click="clearSettings" :disabled="settingsChanged || savingSettings" class="changes ml-2 bg-red-500 disabled:opacity-50">Clear Changes</button>
+    <h1 class="view-title text-white">Categories</h1>
 
     <div class="w-full mt-4 max-w-2xl">
+
+      <div id="categories">
+        <h2 class="mt-6 text-xl text-white">Categories</h2>
+        <ul class="py-2">
+          <li v-for="(category, index) in categoriesState" :key="index">
+            <div class="py-2 px-4 mt-2 bg-primary rounded-xl flex flex-row">
+              <span class="text-white">{{ category.name }} ({{ category.num_torrents }})</span>
+              <a @click="deleteCategory(category.name)" class="ml-auto px-1 rounded-lg bg-opacity-10 text-red-400 hover:text-red-500 text-center cursor-pointer">
+                X
+              </a>
+            </div>
+          </li>
+        </ul>
+        <div class="flex flex-row">
+          <input v-model="newCategory" class="py-2 px-4 appearance-none w-full bg-white text-gray-700 rounded-xl leading-tight focus:outline-none" type='text' placeholder='Enter category'>
+          <button @click="addCategory" class="button ml-2 px-4 bg-green-600 hover:bg-green-500 text-white rounded-xl">Add</button>
+        </div>
+      </div>
+
+      <h1 class="mt-6 view-title text-white">Site Settings</h1>
+      <button @click="saveSettings" :disabled="settingsChanged || savingSettings" class="changes bg-blue-500 disabled:opacity-50">Save Changes</button>
+      <button @click="clearSettings" :disabled="settingsChanged || savingSettings" class="changes ml-2 bg-red-500 disabled:opacity-50">Clear Changes</button>
+
       <div id="general-settings">
         <h2 class="text-xl text-white">General</h2>
         <label>Site Name</label>
@@ -12,6 +33,7 @@
           <input type='text' v-model="settings.website.name">
         </div>
       </div>
+
       <div id="advanced-settings">
         <h2 class="mt-6 text-xl text-white">Advanced</h2>
 
@@ -32,66 +54,100 @@
           <input type='text' v-model="settings.tracker.token">
         </div>
 
-      </div>
-      <div id="categories">
-        <h2 class="mt-6 text-xl text-white">Categories</h2>
-        <ul class="py-2">
-          <li v-for="(category, index) in categories" :key="index">
-            <div class="py-2 px-4 mt-2 bg-primary rounded-xl flex flex-row">
-              <span class="text-white">{{ category.name }} ({{ category.num_torrents }})</span>
-              <a @click="deleteCategory(category.name)" class="ml-auto px-3 rounded-lg bg-red-500 bg-opacity-10 text-red-400 hover:text-red-500 text-center cursor-pointer">
-                X
-              </a>
-            </div>
-          </li>
-        </ul>
-        <div class="flex flex-row">
-          <input v-model="newCategory" class="py-2 px-4 appearance-none w-full bg-white text-gray-700 rounded-xl leading-tight focus:outline-none" type='text' placeholder='Enter category'>
-          <button @click="addCategory" class="button ml-2 px-4 bg-green-600 hover:bg-green-500 text-white rounded-xl">Add</button>
+        <label>Private Key Validity (seconds)</label>
+        <div class="setting-input-container">
+          <input type='number' v-model="settings.tracker.token_valid_seconds">
         </div>
-      </div>
 
-<!--        <form class="mt-6 border-t border-gray-400 pt-4">-->
-<!--          <div class='flex flex-wrap -mx-3 mb-6'>-->
-<!--            <div class='w-full md:w-full px-3 mb-6'>-->
-<!--              <label class='block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2' for='grid-text-1'>email address</label>-->
-<!--              <input class='appearance-none block w-full bg-white text-gray-700 border border-gray-400 shadow-inner rounded-md py-3 px-4 leading-tight focus:outline-none  focus:border-gray-500' id='grid-text-1' type='text' placeholder='Enter email'  required>-->
-<!--            </div>-->
-<!--            <div class='w-full md:w-full px-3 mb-6 '>-->
-<!--              <label class='block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2'>password</label>-->
-<!--              <button class="appearance-none bg-gray-200 text-gray-900 px-2 py-1 shadow-sm border border-gray-400 rounded-md ">change your password</button>-->
-<!--            </div>-->
-<!--            <div class='w-full md:w-full px-3 mb-6'>-->
-<!--              <label class='block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2'>pick your country</label>-->
-<!--              <div class="flex-shrink w-full inline-block relative">-->
-<!--                <select class="block appearance-none text-gray-600 w-full bg-white border border-gray-400 shadow-inner px-4 py-2 pr-8 rounded">-->
-<!--                  <option>choose ...</option>-->
-<!--                  <option>USA</option>-->
-<!--                  <option>France</option>-->
-<!--                  <option>Spain</option>-->
-<!--                  <option>UK</option>-->
-<!--                </select>-->
-<!--                <div class="pointer-events-none absolute top-0 mt-3  right-0 flex items-center px-2 text-gray-600">-->
-<!--                  <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>-->
-<!--                </div>-->
-<!--              </div>-->
-<!--            </div>-->
-<!--            <div class='w-full md:w-full px-3 mb-6'>-->
-<!--              <label class='block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2'>fav language</label>-->
-<!--              <div class="flex-shrink w-full inline-block relative">-->
-<!--                <select class="block appearance-none text-gray-600 w-full bg-white border border-gray-400 shadow-inner px-4 py-2 pr-8 rounded">-->
-<!--                  <option>choose ...</option>-->
-<!--                  <option>English</option>-->
-<!--                  <option>France</option>-->
-<!--                  <option>Spanish</option>-->
-<!--                </select>-->
-<!--                <div class="pointer-events-none absolute top-0 mt-3  right-0 flex items-center px-2 text-gray-600">-->
-<!--                  <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>-->
-<!--                </div>-->
-<!--              </div>-->
-<!--            </div>-->
-<!--          </div>-->
-<!--        </form>-->
+        <!-- NET -->
+        <h3>Network</h3>
+        <label>Port [needs restart]</label>
+        <div class="setting-input-container">
+          <input type='number' v-model="settings.net.port">
+        </div>
+
+        <label>Domain [optional]</label>
+        <div class="setting-input-container">
+          <input type='text' v-model="settings.net.base_url" placeholder="optional">
+        </div>
+
+        <!-- Authentication -->
+        <h3>Authentication</h3>
+        <label>Min. Password Length</label>
+        <div class="setting-input-container">
+          <input type='number' v-model="settings.auth.min_password_length">
+        </div>
+
+        <label>Max. Password Length</label>
+        <div class="setting-input-container">
+          <input type='number' v-model="settings.auth.max_password_length">
+        </div>
+
+        <label>Secret Key</label>
+        <div class="setting-input-container">
+          <input type='text' v-model="settings.auth.secret_key">
+        </div>
+
+        <!-- Database -->
+        <h3>Database</h3>
+        <label>Connect URL</label>
+        <div class="setting-input-container">
+          <input type='text' v-model="settings.database.connect_url">
+        </div>
+
+        <label>Torrent Status Update Interval (seconds)</label>
+        <div class="setting-input-container">
+          <input type='number' v-model="settings.database.torrent_info_update_interval">
+        </div>
+
+        <!-- Storage -->
+        <h3>Storage</h3>
+        <label>Torrent Upload Path</label>
+        <div class="setting-input-container">
+          <input type='text' v-model="settings.storage.upload_path">
+        </div>
+
+        <!-- Mail -->
+        <h3>Mail</h3>
+        <label>Email Verification Enabled (true or false)</label>
+        <div class="setting-input-container">
+          <input type='text' v-model="settings.mail.email_verification_enabled">
+        </div>
+
+        <label>Server</label>
+        <div class="setting-input-container">
+          <input type='text' v-model="settings.mail.server">
+        </div>
+
+        <label>Port</label>
+        <div class="setting-input-container">
+          <input type='text' v-model="settings.mail.port">
+        </div>
+
+        <label>Username</label>
+        <div class="setting-input-container">
+          <input type='text' v-model="settings.mail.username">
+        </div>
+
+        <label>Password</label>
+        <div class="setting-input-container">
+          <input type='text' v-model="settings.mail.password">
+        </div>
+
+        <label>From</label>
+        <div class="setting-input-container">
+          <input type='text' v-model="settings.mail.from">
+        </div>
+
+        <label>Reply To</label>
+        <div class="setting-input-container">
+          <input type='text' v-model="settings.mail.reply_to">
+        </div>
+
+        <button @click="saveSettings" :disabled="settingsChanged || savingSettings" class="changes bg-blue-500 disabled:opacity-50">Save Changes</button>
+        <button @click="clearSettings" :disabled="settingsChanged || savingSettings" class="changes ml-2 bg-red-500 disabled:opacity-50">Clear Changes</button>
+
+      </div>
     </div>
   </div>
 </template>
@@ -150,6 +206,9 @@ export default {
     },
     settingsState() {
       return this.$store.state.settings;
+    },
+    categoriesState() {
+      return this.$store.state.categories;
     }
   },
   methods: {
@@ -170,9 +229,7 @@ export default {
     saveSettings() {
       this.savingSettings = true;
       HttpService.post(`/settings`, this.settings, () => {
-        this.$store.dispatch('getSettings').then(() => {
-          this.clearSettings();
-        });
+        this.$store.dispatch('getSettings');
         this.savingSettings = false;
       }).catch(() => {
         this.savingSettings = false;
@@ -183,14 +240,13 @@ export default {
     },
   },
   beforeMount() {
-    this.$store.dispatch('getSettings').then(() => {
-      this.clearSettings();
-    });
+    this.$store.dispatch('getSettings');
+    this.$store.dispatch('getCategories');
   },
   watch: {
     settingsState() {
       this.clearSettings();
-    }
+    },
   }
 }
 </script>
@@ -210,7 +266,7 @@ h2 {
 }
 
 h3 {
-  @apply mt-2 text-lg text-gray-200;
+  @apply mt-2 text-lg text-white;
 }
 
 .details {

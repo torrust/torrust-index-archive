@@ -3,7 +3,7 @@ use actix_web::{App, HttpServer, middleware, web};
 use actix_cors::Cors;
 use torrust::database::Database;
 use torrust::{handlers};
-use torrust::config::{Configuration, TorrustConfig};
+use torrust::config::{Configuration};
 use torrust::common::AppData;
 use torrust::auth::AuthorizationService;
 use torrust::tracker::TrackerService;
