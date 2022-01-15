@@ -7,7 +7,8 @@ pub struct User {
     pub email: String,
     pub email_verified: bool,
     pub password: String,
-    pub administrator: bool
+    pub administrator: bool,
+    pub banned: bool,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]

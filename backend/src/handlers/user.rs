@@ -18,9 +18,14 @@ use crate::mailer::VerifyClaims;
 pub fn init_routes(cfg: &mut web::ServiceConfig) {
     cfg.service(
         web::scope("/user")
-            .service(web::resource("/register").route(web::post().to(register)))
-            .service(web::resource("/login").route(web::post().to(login)))
-            .service(web::resource("/verify/{token}").route(web::get().to(verify_user)))
+            .service(web::resource("/{user}")
+                .route(web::delete().to(ban_user)))
+            .service(web::resource("/register")
+                .route(web::post().to(register)))
+            .service(web::resource("/login")
+                .route(web::post().to(login)))
+            .service(web::resource("/verify/{token}")
+                .route(web::get().to(verify_user)))
     );
 }
 
@@ -184,6 +189,31 @@ pub async fn verify_user(req: HttpRequest, app_data: WebAppData) -> String {
     }
 
     String::from("Email verified, you can close this page.")
+}
+
+pub async fn ban_user(req: HttpRequest, app_data: WebAppData) -> ServiceResult<impl Responder> {
+    let user = app_data.auth.get_user_from_request(&req).await?;
+
+    // check if user is administrator
+    if !user.administrator { return Err(ServiceError::Unauthorized) }
+
+    let to_be_banned_username = req.match_info().get("user").unwrap();
+
+    let res = sqlx::query!(
+        "DELETE FROM torrust_users WHERE username = ? AND administrator = 0",
+        to_be_banned_username
+    )
+        .execute(&app_data.database.pool)
+        .await;
+
+    println!("{:?}", res);
+
+    if let Err(_) = res { return Err(ServiceError::UsernameNotFound) }
+    if res.unwrap().rows_affected() == 0 { return Err(ServiceError::UsernameNotFound) }
+
+    Ok(HttpResponse::Ok().json(OkResponse {
+        data: format!("Banned user: {}", to_be_banned_username)
+    }))
 }
 
 pub async fn me(req: HttpRequest, app_data: WebAppData) -> ServiceResult<impl Responder> {

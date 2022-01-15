@@ -20,14 +20,18 @@
             <div class="px-2 text-gray-300 text-sm">Seeders: <span class="text-green-500">{{ torrent.seeders }}</span></div>
             <div class="px-2 text-gray-300 text-sm">Leechers: <span class="text-red-500">{{ torrent.leechers }}</span></div>
           </div>
-          <button v-if="isAdmin" type="button" @click="deleteTorrent"
-                  class="ml-0 lg:ml-auto text-white bg-red-600 border-transparent shadow-sm button hover:bg-red-500">
-            Delete torrent
-          </button>
           <button type="button" @click="downloadTorrent"
-                  class="ml-0 lg:ml-2 text-white bg-green-600 border-transparent shadow-sm button hover:bg-green-500">
+                  class="ml-0 lg:ml-auto text-white bg-green-600 border-transparent shadow-sm button hover:bg-green-500">
             <DownloadIcon class="mr-2 -ml-1 w-5 h-5"/>
             Torrent file
+          </button>
+          <button v-if="isAdmin" type="button" @click="deleteTorrent"
+                  class="ml-0 lg:ml-2 text-white bg-red-600 border-transparent shadow-sm button hover:bg-red-500">
+            Delete torrent
+          </button>
+          <button v-if="isAdmin" type="button" @click="banUser(torrent.uploader)"
+                  class="ml-0 lg:ml-2 text-white bg-red-600 border-transparent shadow-sm button hover:bg-red-500">
+            Ban user
           </button>
         </div>
 
@@ -45,10 +49,10 @@
         </div>
 
         <h2 class="p-4 text-gray-300">Torrent Description</h2>
-        <button v-if="isAdmin || isOwner" type="button"
-                class="mb-2 text-white bg-blue-600 border-transparent shadow-sm button hover:bg-blue-500">
-          Edit description
-        </button>
+<!--        <button v-if="isAdmin || isOwner" type="button"-->
+<!--                class="mb-2 text-white bg-blue-600 border-transparent shadow-sm button hover:bg-blue-500">-->
+<!--          Edit description-->
+<!--        </button>-->
         <div class="p-4 bg-primary text-gray-300 rounded-3xl flex flex-col w-full overflow-auto">
           <div v-html="compiledMarkdown" class="max-w-none prose-sm prose-blue"></div>
         </div>
@@ -134,7 +138,20 @@ export default {
         document.body.appendChild(link);
         link.click();
       });
-    }
+    },
+    banUser(user) {
+      const self = this;
+      HttpService.delete(`/user/${user}`, {}, () => {
+        Vue.notify({
+          title: 'Banned!',
+          text: 'User banned successfully.',
+          type: 'success',
+        })
+        self.closeModal();
+      }).catch(() => {
+        self.closeModal();
+      })
+    },
   },
   computed: {
     ...mapState({
