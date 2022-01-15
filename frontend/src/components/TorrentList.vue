@@ -92,7 +92,7 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
 .table {
   border-spacing: 0 15px;
 }
@@ -105,13 +105,9 @@ i {
   border-radius: 20px;
 }
 
-tr {
-  &:hover {
-    td {
-      @apply duration-100;
-      @apply border-blue-400;
-    }
-  }
+tr:hover td {
+  @apply duration-100;
+  @apply border-blue-400;
 }
 
 tr th,
@@ -123,18 +119,11 @@ th {
   @apply font-light;
 }
 
-//tr td {
-//  @apply border-t-2 border-b-2 border-gray-200;
-//}
-//
-//
 tr td:nth-child(n+6) {
   border-radius: 0 .625rem .625rem 0;
-  //@apply border-r-2;
 }
 
 tr td:nth-child(1) {
   border-radius: .625rem 0 0 .625rem;
-  //@apply border-l-2;
 }
 </style>
