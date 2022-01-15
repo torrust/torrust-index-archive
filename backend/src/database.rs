@@ -101,7 +101,7 @@ impl Database {
         let res = sqlx::query_as!(
             TorrentListing,
             r#"SELECT * FROM torrust_torrents
-               WHERE torrent_id = ? AND hidden = false"#,
+               WHERE torrent_id = ?"#,
             torrent_id
         )
             .fetch_one(&self.pool)

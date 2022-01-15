@@ -141,7 +141,7 @@ export default {
     },
     banUser(user) {
       const self = this;
-      HttpService.delete(`/user/${user}`, {}, () => {
+      HttpService.delete(`/user/ban/${user}`, {}, () => {
         Vue.notify({
           title: 'Banned!',
           text: 'User banned successfully.',

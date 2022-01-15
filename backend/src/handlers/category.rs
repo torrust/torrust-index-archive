@@ -21,7 +21,7 @@ pub async fn get_categories(app_data: WebAppData) -> ServiceResult<impl Responde
     let res = sqlx::query_as::<_, CategoryResponse>(
         r#"SELECT name, COUNT(tt.category_id) as num_torrents
            FROM torrust_categories tc
-           LEFT JOIN torrust_torrents tt on tc.category_id = tt.category_id AND tt.hidden = false
+           LEFT JOIN torrust_torrents tt on tc.category_id = tt.category_id
            GROUP BY tc.name"#
     )
         .fetch_all(&app_data.database.pool)

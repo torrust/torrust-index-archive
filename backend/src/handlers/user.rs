@@ -18,12 +18,12 @@ use crate::mailer::VerifyClaims;
 pub fn init_routes(cfg: &mut web::ServiceConfig) {
     cfg.service(
         web::scope("/user")
-            .service(web::resource("/{user}")
-                .route(web::delete().to(ban_user)))
             .service(web::resource("/register")
                 .route(web::post().to(register)))
             .service(web::resource("/login")
                 .route(web::post().to(login)))
+            .service(web::resource("/ban/{user}")
+                .route(web::delete().to(ban_user)))
             .service(web::resource("/verify/{token}")
                 .route(web::get().to(verify_user)))
     );

@@ -116,7 +116,7 @@ pub async fn get_torrents(params: Query<DisplayInfo>, app_data: WebAppData) -> S
         String::new()
     };
 
-    let mut query_string = format!("SELECT tt.* FROM torrust_torrents tt {} WHERE hidden = false AND title LIKE ?", category_filter_query);
+    let mut query_string = format!("SELECT tt.* FROM torrust_torrents tt {} WHERE title LIKE ?", category_filter_query);
     let count_query_string = format!("SELECT COUNT(torrent_id) as count FROM ({})", query_string);
 
     let count: TorrentCount = sqlx::query_as::<_, TorrentCount>(&count_query_string)
@@ -190,16 +190,14 @@ pub async fn delete_torrent(req: HttpRequest, app_data: WebAppData) -> ServiceRe
     let torrent_id = get_torrent_id_from_request(&req)?;
 
     let res = sqlx::query!(
-        "UPDATE torrust_torrents SET hidden = true WHERE torrent_id = ?",
+        "DELETE FROM torrust_torrents WHERE torrent_id = ?",
         torrent_id
     )
         .execute(&app_data.database.pool)
         .await;
 
-    match res {
-        Ok(_) => (),
-        Err(_) => return Err(ServiceError::InternalServerError),
-    };
+    if let Err(_) = res { return Err(ServiceError::UsernameNotFound) }
+    if res.unwrap().rows_affected() == 0 { return Err(ServiceError::TorrentNotFound) }
 
     Ok(HttpResponse::Ok().json(OkResponse {
         data: NewTorrentResponse {
