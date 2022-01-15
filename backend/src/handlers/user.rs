@@ -206,8 +206,6 @@ pub async fn ban_user(req: HttpRequest, app_data: WebAppData) -> ServiceResult<i
         .execute(&app_data.database.pool)
         .await;
 
-    println!("{:?}", res);
-
     if let Err(_) = res { return Err(ServiceError::UsernameNotFound) }
     if res.unwrap().rows_affected() == 0 { return Err(ServiceError::UsernameNotFound) }
 
