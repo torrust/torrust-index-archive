@@ -5,24 +5,26 @@ use crate::utils::time::current_time;
 use crate::errors::ServiceError;
 use std::sync::Arc;
 use crate::database::Database;
-use crate::config::TorrustConfig;
+use crate::config::Configuration;
 
 pub struct AuthorizationService {
-    cfg: Arc<TorrustConfig>,
+    cfg: Arc<Configuration>,
     database: Arc<Database>,
 }
 
 impl AuthorizationService {
-    pub fn new(cfg: Arc<TorrustConfig>, database: Arc<Database>) -> AuthorizationService {
+    pub fn new(cfg: Arc<Configuration>, database: Arc<Database>) -> AuthorizationService {
         AuthorizationService {
             cfg,
             database
         }
     }
 
-    pub fn sign_jwt(&self, user: User) -> String {
+    pub async fn sign_jwt(&self, user: User) -> String {
+        let settings = self.cfg.settings.read().await;
+
         // create JWT that expires in two weeks
-        let key = self.cfg.auth.secret_key.as_bytes();
+        let key = settings.auth.secret_key.as_bytes();
         let exp_date = current_time() + 1_209_600; // two weeks from now
 
         let claims = Claims {
@@ -41,10 +43,12 @@ impl AuthorizationService {
         token
     }
 
-    pub fn verify_jwt(&self, token: &str) -> Result<Claims, ServiceError> {
+    pub async fn verify_jwt(&self, token: &str) -> Result<Claims, ServiceError> {
+        let settings = self.cfg.settings.read().await;
+
         match decode::<Claims>(
             token,
-            &DecodingKey::from_secret(self.cfg.auth.secret_key.as_bytes()),
+            &DecodingKey::from_secret(settings.auth.secret_key.as_bytes()),
             &Validation::new(Algorithm::HS256),
         ) {
             Ok(token_data) => {
@@ -57,14 +61,14 @@ impl AuthorizationService {
         }
     }
 
-    pub fn get_claims_from_request(&self, req: &HttpRequest) -> Result<Claims, ServiceError> {
+    pub async fn get_claims_from_request(&self, req: &HttpRequest) -> Result<Claims, ServiceError> {
         let _auth = req.headers().get("Authorization");
         match _auth {
             Some(_) => {
                 let _split: Vec<&str> = _auth.unwrap().to_str().unwrap().split("Bearer").collect();
                 let token = _split[1].trim();
 
-                match self.verify_jwt(token) {
+                match self.verify_jwt(token).await {
                     Ok(claims) => Ok(claims),
                     Err(e) => Err(e),
                 }
@@ -74,7 +78,7 @@ impl AuthorizationService {
     }
 
     pub async fn get_user_from_request(&self, req: &HttpRequest) -> Result<User, ServiceError> {
-        let claims = match self.get_claims_from_request(req) {
+        let claims = match self.get_claims_from_request(req).await {
             Ok(claims) => Ok(claims),
             Err(e) => Err(e)
         }?;

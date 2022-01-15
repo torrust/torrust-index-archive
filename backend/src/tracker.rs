@@ -1,4 +1,4 @@
-use crate::config::TorrustConfig;
+use crate::config::Configuration;
 use std::sync::Arc;
 use crate::database::Database;
 use crate::models::tracker_key::TrackerKey;
@@ -7,7 +7,7 @@ use crate::models::user::User;
 use serde::{Serialize, Deserialize};
 
 pub struct TrackerService {
-    cfg: Arc<TorrustConfig>,
+    cfg: Arc<Configuration>,
     database: Arc<Database>,
 }
 
@@ -33,7 +33,7 @@ pub struct Peer {
 }
 
 impl TrackerService {
-    pub fn new(cfg: Arc<TorrustConfig>, database: Arc<Database>) -> TrackerService {
+    pub fn new(cfg: Arc<Configuration>, database: Arc<Database>) -> TrackerService {
         TrackerService {
             cfg,
             database
@@ -41,8 +41,12 @@ impl TrackerService {
     }
 
     pub async fn whitelist_info_hash(&self, info_hash: String) -> Result<(), ServiceError> {
+        let settings = self.cfg.settings.read().await;
+
         let request_url =
-            format!("{}/api/whitelist/{}?token={}", self.cfg.tracker.api_url, info_hash, self.cfg.tracker.token);
+            format!("{}/api/whitelist/{}?token={}", settings.tracker.api_url, info_hash, settings.tracker.token);
+
+        drop(settings);
 
         let client = reqwest::Client::new();
 
@@ -59,13 +63,15 @@ impl TrackerService {
     }
 
     pub async fn get_personal_announce_url(&self, user: &User) -> Result<String, ServiceError> {
+        let settings = self.cfg.settings.read().await;
+
         let tracker_key = self.database.get_valid_tracker_key(user.user_id).await;
 
         match tracker_key {
-            Some(v) => { Ok(format!("{}/{}", self.cfg.tracker.url, v.key)) }
+            Some(v) => { Ok(format!("{}/{}", settings.tracker.url, v.key)) }
             None => {
                 match self.retrieve_new_tracker_key(user.user_id).await {
-                    Ok(v) => { Ok(format!("{}/{}", self.cfg.tracker.url, v.key)) },
+                    Ok(v) => { Ok(format!("{}/{}", settings.tracker.url, v.key)) },
                     Err(_) => { Err(ServiceError::TrackerOffline) }
                 }
             }
@@ -73,8 +79,12 @@ impl TrackerService {
     }
 
     pub async fn retrieve_new_tracker_key(&self, user_id: i64) -> Result<TrackerKey, ServiceError> {
+        let settings = self.cfg.settings.read().await;
+
         let request_url =
-            format!("{}/api/key/{}?token={}", self.cfg.tracker.api_url, self.cfg.tracker.token_valid_seconds, self.cfg.tracker.token);
+            format!("{}/api/key/{}?token={}", settings.tracker.api_url, settings.tracker.token_valid_seconds, settings.tracker.token);
+
+        drop(settings);
 
         let client = reqwest::Client::new();
         let response = match client.post(request_url)
@@ -97,8 +107,12 @@ impl TrackerService {
     }
 
     pub async fn get_torrent_info(&self, info_hash: &str) -> Result<TorrentInfo, ServiceError> {
+        let settings = self.cfg.settings.read().await;
+
         let request_url =
-            format!("{}/api/torrent/{}?token={}", self.cfg.tracker.api_url, info_hash, self.cfg.tracker.token);
+            format!("{}/api/torrent/{}?token={}", settings.tracker.api_url, info_hash, settings.tracker.token);
+
+        drop(settings);
 
         let client = reqwest::Client::new();
         let response = match client.get(request_url)

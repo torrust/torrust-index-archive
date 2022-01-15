@@ -1,4 +1,4 @@
-use crate::config::TorrustConfig;
+use crate::config::Configuration;
 use std::sync::Arc;
 use crate::errors::ServiceError;
 use serde::{Serialize, Deserialize};
@@ -10,7 +10,7 @@ use sailfish::TemplateOnce;
 use crate::utils::time::current_time;
 
 pub struct MailerService {
-    cfg: Arc<TorrustConfig>,
+    cfg: Arc<Configuration>,
     mailer: Arc<Mailer>
 }
 
@@ -30,8 +30,8 @@ struct VerifyTemplate {
 
 
 impl MailerService {
-    pub fn new(cfg: Arc<TorrustConfig>) -> MailerService {
-        let mailer = Arc::new(Self::get_mailer(&cfg));
+    pub async fn new(cfg: Arc<Configuration>) -> MailerService {
+        let mailer = Arc::new(Self::get_mailer(&cfg).await);
 
         Self {
             cfg,
@@ -39,11 +39,13 @@ impl MailerService {
         }
     }
 
-    fn get_mailer(cfg: &TorrustConfig) -> Mailer {
-        let creds = Credentials::new(cfg.mail.username.to_owned(), cfg.mail.password.to_owned());
+    async fn get_mailer(cfg: &Configuration) -> Mailer {
+        let settings = cfg.settings.read().await;
 
-        AsyncSmtpTransport::<Tokio1Executor>::builder_dangerous(&cfg.mail.server)
-            .port(cfg.mail.port)
+        let creds = Credentials::new(settings.mail.username.to_owned(), settings.mail.password.to_owned());
+
+        AsyncSmtpTransport::<Tokio1Executor>::builder_dangerous(&settings.mail.server)
+            .port(settings.mail.port)
             .credentials(creds)
             .authentication(vec![
                 Mechanism::Login,
@@ -54,8 +56,8 @@ impl MailerService {
     }
 
     pub async fn send_verification_mail(&self, to: &str, username: &str, base_url: &str) -> Result<(), ServiceError> {
-        let builder = self.get_builder(to);
-        let verification_url = self.get_verification_url(username, base_url);
+        let builder = self.get_builder(to).await;
+        let verification_url = self.get_verification_url(username, base_url).await;
 
         let mail_body = format!(
             r#"
@@ -101,16 +103,20 @@ If this account wasn't made by you, you can ignore this email.
         }
     }
 
-    fn get_builder(&self, to: &str) -> MessageBuilder {
+    async fn get_builder(&self, to: &str) -> MessageBuilder {
+        let settings = self.cfg.settings.read().await;
+
         Message::builder()
-            .from(self.cfg.mail.from.parse().unwrap())
-            .reply_to(self.cfg.mail.reply_to.parse().unwrap())
+            .from(settings.mail.from.parse().unwrap())
+            .reply_to(settings.mail.reply_to.parse().unwrap())
             .to(to.parse().unwrap())
     }
 
-    fn get_verification_url(&self, username: &str, base_url: &str) -> String {
+    async fn get_verification_url(&self, username: &str, base_url: &str) -> String {
+        let settings = self.cfg.settings.read().await;
+
         // create verification JWT
-        let key = self.cfg.auth.secret_key.as_bytes();
+        let key = settings.auth.secret_key.as_bytes();
 
         // Create non expiring token that is only valid for email-verification
         let claims = VerifyClaims {
@@ -127,7 +133,7 @@ If this account wasn't made by you, you can ignore this email.
             .unwrap();
 
         let mut base_url = base_url.clone();
-        if let Some(cfg_base_url) = &self.cfg.net.base_url {
+        if let Some(cfg_base_url) = &settings.net.base_url {
             base_url = cfg_base_url;
         }
 

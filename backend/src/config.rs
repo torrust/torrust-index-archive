@@ -2,6 +2,7 @@ use std::fs;
 use config::{ConfigError, Config, File};
 use std::path::Path;
 use serde::{Serialize, Deserialize};
+use tokio::sync::RwLock;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Website {
@@ -62,9 +63,21 @@ pub struct TorrustConfig {
     pub mail: Mail,
 }
 
-impl TorrustConfig {
-    pub fn default() -> TorrustConfig {
-        TorrustConfig {
+#[derive(Debug)]
+pub struct Configuration {
+    // pub website: Website,
+    // pub tracker: Tracker,
+    // pub net: Network,
+    // pub auth: Auth,
+    // pub database: Database,
+    // pub storage: Storage,
+    // pub mail: Mail,
+    pub settings: RwLock<TorrustConfig>
+}
+
+impl Configuration {
+    pub fn default() -> Configuration {
+        let torrust_config = TorrustConfig {
             website: Website {
                 name: "Torrust".to_string()
             },
@@ -99,10 +112,14 @@ impl TorrustConfig {
                 server: "".to_string(),
                 port: 25
             }
+        };
+
+        Configuration {
+            settings: RwLock::new(torrust_config)
         }
     }
 
-    pub fn load_from_file() -> Result<TorrustConfig, ConfigError> {
+    pub async fn load_from_file() -> Result<Configuration, ConfigError> {
         let mut config = Config::new();
 
         const CONFIG_PATH: &str = "config.toml";
@@ -112,20 +129,40 @@ impl TorrustConfig {
         } else {
             eprintln!("No config file found.");
             eprintln!("Creating config file..");
-            let config = TorrustConfig::default();
-            let _ = config.save_to_file();
+            let config = Configuration::default();
+            let _ = config.save_to_file().await;
             return Err(ConfigError::Message(format!("Please edit the config.TOML in the root folder and restart the tracker.")))
         }
 
-        match config.try_into() {
+        let torrust_config: TorrustConfig = match config.try_into() {
             Ok(data) => Ok(data),
             Err(e) => Err(ConfigError::Message(format!("Errors while processing config: {}.", e))),
-        }
+        }?;
+
+        Ok(Configuration {
+            settings: RwLock::new(torrust_config)
+        })
     }
 
-    pub fn save_to_file(&self) -> Result<(), ()>{
-        let toml_string = toml::to_string(self).expect("Could not encode TOML value");
+    pub async fn save_to_file(&self) -> Result<(), ()>{
+        let settings = self.settings.read().await;
+
+        let toml_string = toml::to_string(&*settings).expect("Could not encode TOML value");
+
+        drop(settings);
+
         fs::write("config.toml", toml_string).expect("Could not write to file!");
+        Ok(())
+    }
+
+    pub async fn update_settings(&self, new_settings: TorrustConfig) -> Result<(), ()> {
+        let mut settings = self.settings.write().await;
+        *settings = new_settings;
+
+        drop(settings);
+
+        let _ = self.save_to_file().await;
+
         Ok(())
     }
 }

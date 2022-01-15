@@ -39,15 +39,17 @@ pub struct Login {
 }
 
 pub async fn register(req: HttpRequest, payload: web::Json<Register>, app_data: WebAppData) -> ServiceResult<impl Responder> {
+    let settings = app_data.cfg.settings.read().await;
+
     if payload.password != payload.confirm_password {
         return Err(ServiceError::PasswordsDontMatch);
     }
 
     let password_length = payload.password.len();
-    if password_length <= app_data.cfg.auth.min_password_length {
+    if password_length <= settings.auth.min_password_length {
         return Err(ServiceError::PasswordTooShort);
     }
-    if password_length >= app_data.cfg.auth.max_password_length {
+    if password_length >= settings.auth.max_password_length {
         return Err(ServiceError::PasswordTooLong);
     }
 
@@ -88,7 +90,7 @@ pub async fn register(req: HttpRequest, payload: web::Json<Register>, app_data: 
 
     let conn_info = req.connection_info();
 
-    if app_data.cfg.mail.email_verification_enabled {
+    if settings.mail.email_verification_enabled {
         let mail_res = app_data.mailer.send_verification_mail(
             &payload.email,
             &payload.username,
@@ -111,6 +113,8 @@ pub async fn register(req: HttpRequest, payload: web::Json<Register>, app_data: 
 }
 
 pub async fn login(payload: web::Json<Login>, app_data: WebAppData) -> ServiceResult<impl Responder> {
+    let settings = app_data.cfg.settings.read().await;
+
     let res = if payload.login.contains('@') {
         app_data.database.get_user_with_email(&payload.login).await
     } else {
@@ -119,9 +123,11 @@ pub async fn login(payload: web::Json<Login>, app_data: WebAppData) -> ServiceRe
 
     match res {
         Some(user) => {
-            if app_data.cfg.mail.email_verification_enabled && !user.email_verified {
+            if settings.mail.email_verification_enabled && !user.email_verified {
                 return Err(ServiceError::EmailNotVerified)
             }
+
+            drop(settings);
 
             let parsed_hash = PasswordHash::new(&user.password)?;
 
@@ -130,7 +136,7 @@ pub async fn login(payload: web::Json<Login>, app_data: WebAppData) -> ServiceRe
             }
 
             let username = user.username.clone();
-            let token = app_data.auth.sign_jwt(user.clone());
+            let token = app_data.auth.sign_jwt(user.clone()).await;
 
 
             Ok(HttpResponse::Ok().json(OkResponse {
@@ -146,11 +152,12 @@ pub async fn login(payload: web::Json<Login>, app_data: WebAppData) -> ServiceRe
 }
 
 pub async fn verify_user(req: HttpRequest, app_data: WebAppData) -> String {
+    let settings = app_data.cfg.settings.read().await;
     let token = req.match_info().get("token").unwrap();
 
     let token_data = match decode::<VerifyClaims>(
         token,
-        &DecodingKey::from_secret(app_data.cfg.auth.secret_key.as_bytes()),
+        &DecodingKey::from_secret(settings.auth.secret_key.as_bytes()),
         &Validation::new(Algorithm::HS256),
     ) {
         Ok(token_data) => {
@@ -162,6 +169,8 @@ pub async fn verify_user(req: HttpRequest, app_data: WebAppData) -> String {
         },
         Err(_) => return ServiceError::TokenInvalid.to_string()
     };
+
+    drop(settings);
 
     let res = sqlx::query!(
         "UPDATE torrust_users SET email_verified = TRUE WHERE username = ?",
@@ -184,7 +193,7 @@ pub async fn me(req: HttpRequest, app_data: WebAppData) -> ServiceResult<impl Re
     }?;
 
     let username = user.username.clone();
-    let token = app_data.auth.sign_jwt(user.clone());
+    let token = app_data.auth.sign_jwt(user.clone()).await;
 
     Ok(HttpResponse::Ok().json(OkResponse {
         data: TokenResponse {

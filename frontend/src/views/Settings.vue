@@ -1,13 +1,39 @@
 <template>
   <div>
     <h1 class="view-title text-white">Site Settings</h1>
-      <div class="w-full mt-4 max-w-2xl">
+    <button @click="saveSettings" :disabled="settingsChanged || savingSettings" class="changes bg-blue-500 disabled:opacity-50">Save Changes</button>
+    <button @click="clearSettings" :disabled="settingsChanged || savingSettings" class="changes ml-2 bg-red-500 disabled:opacity-50">Clear Changes</button>
+
+    <div class="w-full mt-4 max-w-2xl">
+      <div id="general-settings">
         <h2 class="text-xl text-white">General</h2>
-        <label class="mt-2 block text-gray-200 ">Site Name</label>
+        <label>Site Name</label>
         <div class="py-1 flex flex-row">
-          <input class="py-2 px-4 appearance-none w-full bg-white text-gray-700 rounded-xl leading-tight focus:outline-none" type='text' placeholder='Torrust'>
-          <button :disabled="!!newCategory" class="button ml-2 px-4 bg-blue-600 hover:bg-blue-500 text-white rounded-xl">Save</button>
+          <input type='text' v-model="settings.website.name">
         </div>
+      </div>
+      <div id="advanced-settings">
+        <h2 class="mt-6 text-xl text-white">Advanced</h2>
+
+        <!-- Tracker -->
+        <h3>Tracker</h3>
+        <label>URL</label>
+        <div class="setting-input-container">
+          <input type='text' v-model="settings.tracker.url">
+        </div>
+
+        <label>API URL</label>
+        <div class="setting-input-container">
+          <input type='text' v-model="settings.tracker.api_url">
+        </div>
+
+        <label>API Token</label>
+        <div class="setting-input-container">
+          <input type='text' v-model="settings.tracker.token">
+        </div>
+
+      </div>
+      <div id="categories">
         <h2 class="mt-6 text-xl text-white">Categories</h2>
         <ul class="py-2">
           <li v-for="(category, index) in categories" :key="index">
@@ -23,6 +49,7 @@
           <input v-model="newCategory" class="py-2 px-4 appearance-none w-full bg-white text-gray-700 rounded-xl leading-tight focus:outline-none" type='text' placeholder='Enter category'>
           <button @click="addCategory" class="button ml-2 px-4 bg-green-600 hover:bg-green-500 text-white rounded-xl">Add</button>
         </div>
+      </div>
 
 <!--        <form class="mt-6 border-t border-gray-400 pt-4">-->
 <!--          <div class='flex flex-wrap -mx-3 mb-6'>-->
@@ -65,7 +92,7 @@
 <!--            </div>-->
 <!--          </div>-->
 <!--        </form>-->
-      </div>
+    </div>
   </div>
 </template>
 
@@ -78,9 +105,52 @@ export default {
   name: "Settings",
   data: () => ({
     newCategory: '',
+    savingSettings: false,
+    settings: {
+      website: {
+        name: ""
+      },
+      tracker: {
+        url: "",
+        api_url: "",
+        token: "",
+        token_valid_seconds: 0
+      },
+      net: {
+        port: 0,
+        base_url: null
+      },
+      auth: {
+        min_password_length: 0,
+        max_password_length: 0,
+        secret_key: ""
+      },
+      database: {
+        connect_url: "",
+        torrent_info_update_interval: 0
+      },
+      storage: {
+        upload_path: ""
+      },
+      mail: {
+        email_verification_enabled: false,
+        from: "",
+        reply_to: "",
+        username: "",
+        password: "",
+        server: "",
+        port: 0
+      }
+    }
   }),
   computed: {
-    ...mapState(['categories'])
+    ...mapState(['categories']),
+    settingsChanged() {
+      return JSON.stringify(this.$store.state.settings) === JSON.stringify(this.settings);
+    },
+    settingsState() {
+      return this.$store.state.settings;
+    }
   },
   methods: {
     addCategory() {
@@ -97,6 +167,30 @@ export default {
       }).catch(() => {
       });
     },
+    saveSettings() {
+      this.savingSettings = true;
+      HttpService.post(`/settings`, this.settings, () => {
+        this.$store.dispatch('getSettings').then(() => {
+          this.clearSettings();
+        });
+        this.savingSettings = false;
+      }).catch(() => {
+        this.savingSettings = false;
+      });
+    },
+    clearSettings() {
+      this.settings = JSON.parse(JSON.stringify(this.$store.state.settings));
+    },
+  },
+  beforeMount() {
+    this.$store.dispatch('getSettings').then(() => {
+      this.clearSettings();
+    });
+  },
+  watch: {
+    settingsState() {
+      this.clearSettings();
+    }
   }
 }
 </script>
@@ -107,7 +201,31 @@ export default {
   @apply w-full rounded-3xl shadow-lg text-center py-16 relative;
 }
 
+label {
+  @apply mt-2 block text-gray-200;
+}
+
+h2 {
+  @apply mt-6 text-xl text-white;
+}
+
+h3 {
+  @apply mt-2 text-lg text-gray-200;
+}
+
 .details {
   @apply inline-flex;
+}
+
+.setting-input-container {
+  @apply py-1 flex flex-row;
+}
+
+input {
+  @apply py-2 px-4 appearance-none w-full bg-white text-gray-700 rounded-xl leading-tight focus:outline-none;
+}
+
+button.changes {
+  @apply mt-2 py-2 px-4 text-white rounded-xl;
 }
 </style>

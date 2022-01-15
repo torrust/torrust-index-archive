@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 use serde_bytes::ByteBuf;
-use crate::config::TorrustConfig;
+use crate::config::Configuration;
 use serde_bencode::ser;
 use sha1::{Digest, Sha1};
 
@@ -61,8 +61,12 @@ pub struct Torrent {
 }
 
 impl Torrent {
-    pub fn set_torrust_config(&mut self, cfg: &TorrustConfig) {
-        self.announce = Some(cfg.tracker.url.clone());
+    pub async fn set_torrust_config(&mut self, cfg: &Configuration) {
+        let settings = cfg.settings.read().await;
+
+        self.announce = Some(settings.tracker.url.clone());
+
+        drop(settings);
 
         // if let Some(list) = &mut self.announce_list {
         //     let mut vec = Vec::new();

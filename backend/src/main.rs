@@ -3,7 +3,7 @@ use actix_web::{App, HttpServer, middleware, web};
 use actix_cors::Cors;
 use torrust::database::Database;
 use torrust::{handlers};
-use torrust::config::TorrustConfig;
+use torrust::config::{Configuration, TorrustConfig};
 use torrust::common::AppData;
 use torrust::auth::AuthorizationService;
 use torrust::tracker::TrackerService;
@@ -11,17 +11,19 @@ use torrust::mailer::MailerService;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    let cfg = match TorrustConfig::load_from_file() {
+    let cfg = match Configuration::load_from_file().await {
         Ok(config) => Arc::new(config),
         Err(error) => {
             panic!("{}", error)
         }
     };
 
-    let database = Arc::new(Database::new(&cfg.database.connect_url).await);
+    let settings = cfg.settings.read().await;
+
+    let database = Arc::new(Database::new(&settings.database.connect_url).await);
     let auth = Arc::new(AuthorizationService::new(cfg.clone(), database.clone()));
     let tracker_service = Arc::new(TrackerService::new(cfg.clone(), database.clone()));
-    let mailer_service = Arc::new(MailerService::new(cfg.clone()));
+    let mailer_service = Arc::new(MailerService::new(cfg.clone()).await);
     let app_data = Arc::new(
         AppData::new(
             cfg.clone(),
@@ -36,9 +38,9 @@ async fn main() -> std::io::Result<()> {
     sqlx::migrate!().run(&database.pool).await.unwrap();
 
     // create torrent upload folder
-    async_std::fs::create_dir_all(&cfg.storage.upload_path).await?;
+    async_std::fs::create_dir_all(&settings.storage.upload_path).await?;
 
-    let interval = cfg.database.torrent_info_update_interval;
+    let interval = settings.database.torrent_info_update_interval;
     let weak_tracker_service = std::sync::Arc::downgrade(&tracker_service);
 
     // repeating task, update all seeders and leechers info
@@ -56,7 +58,11 @@ async fn main() -> std::io::Result<()> {
         }
     });
 
-    println!("Listening on 0.0.0.0:{}", cfg.net.port);
+    let port = settings.net.port;
+
+    drop(settings);
+
+    println!("Listening on 0.0.0.0:{}", port);
 
     HttpServer::new(move || {
         App::new()
@@ -65,7 +71,7 @@ async fn main() -> std::io::Result<()> {
             .wrap(middleware::Logger::default())
             .configure(handlers::init_routes)
     })
-        .bind(("0.0.0.0", cfg.net.port))?
+        .bind(("0.0.0.0", port))?
         .run()
         .await
 }

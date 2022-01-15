@@ -10,6 +10,42 @@ export default new Vuex.Store({
         sideBarOpen: false,
         categories: [],
         categoryFilters: [],
+        settings: {
+            website: {
+                name: "Torrust"
+            },
+            tracker: {
+                url: "",
+                api_url: "",
+                token: "",
+                token_valid_seconds: 0
+            },
+            net: {
+                port: 0,
+                base_url: null
+            },
+            auth: {
+                min_password_length: 0,
+                max_password_length: 0,
+                secret_key: ""
+            },
+            database: {
+                connect_url: "",
+                torrent_info_update_interval: 0
+            },
+            storage: {
+                upload_path: ""
+            },
+            mail: {
+                email_verification_enabled: false,
+                from: "",
+                reply_to: "",
+                username: "",
+                password: "",
+                server: "",
+                port: 0
+            }
+        }
     },
     getters: {
         sideBarOpen: state => {
@@ -25,7 +61,10 @@ export default new Vuex.Store({
         },
         setCategoryFilters(state, categoryFilters) {
             Vue.set(state, 'categoryFilters', categoryFilters);
-        }
+        },
+        setSettings(state, settings) {
+            Vue.set(state, 'settings', settings);
+        },
     },
     actions: {
         closeAuthModal({commit}) {
@@ -42,6 +81,12 @@ export default new Vuex.Store({
         getCategories({commit}) {
             HttpService.get('/category', (res) => {
                 commit('setCategories', res.data.data);
+            }).catch(() => {});
+        },
+        getSettings({commit}) {
+            HttpService.get('/settings', (res) => {
+                commit('setSettings', res.data.data);
+                window.document.title = res.data.data.website.name;
             }).catch(() => {});
         }
     },

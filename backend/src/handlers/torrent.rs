@@ -144,12 +144,17 @@ pub async fn get_torrents(params: Query<DisplayInfo>, app_data: WebAppData) -> S
 
 
 pub async fn get_torrent(req: HttpRequest, app_data: WebAppData) -> ServiceResult<impl Responder> {
+    let settings = app_data.cfg.settings.read().await;
+
     let torrent_id = get_torrent_id_from_request(&req)?;
 
     let torrent_listing = app_data.database.get_torrent_by_id(torrent_id).await?;
     let mut torrent_response = TorrentResponse::from_listing(torrent_listing);
 
-    let filepath = format!("{}/{}", app_data.cfg.storage.upload_path, torrent_response.torrent_id.to_string() + ".torrent");
+    let filepath = format!("{}/{}", settings.storage.upload_path, torrent_response.torrent_id.to_string() + ".torrent");
+
+    drop(settings);
+
     if let Ok(torrent) = parse_torrent::read_torrent_from_file(&filepath) {
         if let Some(files) = torrent.info.files {
             torrent_response.files = Some(files);
@@ -209,7 +214,7 @@ pub async fn upload_torrent(req: HttpRequest, payload: Multipart, app_data: WebA
     let mut torrent_request = get_torrent_request_from_payload(payload).await?;
 
     // update announce url to our own tracker url
-    torrent_request.torrent.set_torrust_config(&app_data.cfg);
+    torrent_request.torrent.set_torrust_config(&app_data.cfg).await;
 
     let res = sqlx::query!(
         "SELECT category_id FROM torrust_categories WHERE name = ?",
@@ -245,7 +250,12 @@ pub async fn upload_torrent(req: HttpRequest, payload: Multipart, app_data: WebA
     // whitelist info hash on tracker
     let _r = app_data.tracker.whitelist_info_hash(torrent_request.torrent.info_hash()).await;
 
-    let filepath = format!("{}/{}", app_data.cfg.storage.upload_path, torrent_id.to_string() + ".torrent");
+    let settings = app_data.cfg.settings.read().await;
+
+    let filepath = format!("{}/{}", settings.storage.upload_path, torrent_id.to_string() + ".torrent");
+
+    drop(settings);
+
     save_torrent_file(&filepath, &torrent_request.torrent).await?;
 
     Ok(HttpResponse::Ok().json(OkResponse {
@@ -258,10 +268,12 @@ pub async fn upload_torrent(req: HttpRequest, payload: Multipart, app_data: WebA
 pub async fn download_torrent(req: HttpRequest, app_data: WebAppData) -> ServiceResult<impl Responder> {
     let torrent_id = get_torrent_id_from_request(&req)?;
 
+    let settings = app_data.cfg.settings.read().await;
+
     // optional
     let user = app_data.auth.get_user_from_request(&req).await;
 
-    let filepath = format!("{}/{}", app_data.cfg.storage.upload_path, torrent_id.to_string() + ".torrent");
+    let filepath = format!("{}/{}", settings.storage.upload_path, torrent_id.to_string() + ".torrent");
 
     let mut torrent = match parse_torrent::read_torrent_from_file(&filepath) {
         Ok(torrent) => Ok(torrent),
@@ -281,8 +293,10 @@ pub async fn download_torrent(req: HttpRequest, app_data: WebAppData) -> Service
             list.insert(0, vec);
         }
     } else {
-        torrent.announce = Some(app_data.cfg.tracker.url.clone());
+        torrent.announce = Some(settings.tracker.url.clone());
     }
+
+    drop(settings);
 
     let buffer = match parse_torrent::encode_torrent(&torrent) {
         Ok(v) => Ok(v),
