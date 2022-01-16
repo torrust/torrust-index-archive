@@ -1,7 +1,6 @@
 import Vue from 'vue';
 import App from './App.vue';
 import VueRouter from 'vue-router';
-import './assets/css/tailwind.css';
 import store from "@/store/index";
 import vClickOutside from "v-click-outside";
 import Notifications from 'vue-notification'

@@ -15,8 +15,8 @@
 </template>
 
 <script>
-import TorrentList from "../components/TorrentList";
-import Pagination from "../components/Pagination";
+import TorrentList from "../components/TorrentList.vue";
+import Pagination from "../components/Pagination.vue";
 import HttpService from "@/common/http-service";
 import {mapState} from "vuex";
 

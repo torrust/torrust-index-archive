@@ -1,53 +1,75 @@
 <template>
-  <div class="bg-primary shadow-lg lg:shadow-none bg-opacity-100 lg:bg-opacity-0 sticky lg:static top-0 relative z-20 lg:z10">
-    <div class="w-full h-20 px-6 flex items-center justify-between ">
-      <!-- left navbar -->
-      <div class="flex">
+  <div class="sticky top-0 z-40 w-full backdrop-blur flex-none transition-colors duration-500 lg:z-50 lg:border-b lg:border-slate-900/10 border-slate-50/[0.06] supports-backdrop-blur:bg-white/95 bg-slate-900/75">
 
-        <!-- mobile hamburger -->
-        <div class="inline-block lg:hidden flex items-center mr-4">
-          <button class="hover:text-white hover:border-white focus:outline-none navbar-burger" @click="toggleSidebar()">
-            <svg class="h-5 w-5" fill="white" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-              <title>Menu</title>
-              <path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z"/>
-            </svg>
-          </button>
+    <div class="max-w-8xl mx-auto">
+
+      <div class="px-4 py-4 border-b lg:px-8 border-slate-300/10">
+
+        <div class="relative flex items-center">
+
+          <router-link class="mr-3 flex-none w-auto overflow-hidden" to="/">
+            <span class="sr-only">{{ $store.state.settings.website.name }}</span>
+            <span class="font-semibold text-white">{{ $store.state.settings.website.name }}</span>
+          </router-link>
+
+          <div class="relative hidden lg:flex items-center ml-auto">
+
+<!--            <nav class="text-sm leading-6 text-slate-200">-->
+<!--              <ul class="flex space-x-8">-->
+<!--                <li>-->
+<!--                  <a href="/docs/installation">-->
+<!--                    <a class="hover:text-sky-400">Docs</a>-->
+<!--                  </a>-->
+<!--                </li>-->
+<!--                <li>-->
+<!--                  <a href="https://tailwindui.com" class="hover:text-sky-400">-->
+<!--                    Components-->
+<!--                  </a>-->
+<!--                </li>-->
+<!--                <li>-->
+<!--                  <a href="/blog">-->
+<!--                    <a class="hover:text-sky-400">Blog</a>-->
+<!--                  </a>-->
+<!--                </li>-->
+<!--              </ul>-->
+<!--            </nav>-->
+
+            <div class="ml-6 pl-6 flex items-center border-l border-slate-800">
+              <Profile />
+            </div>
+
+          </div>
         </div>
-
-        <!-- search bar -->
-        <div class="hidden md:flex flex-row">
-          <input v-model="searchQuery" type="search" name="search" placeholder="Search Torrents.."
-                 class="bg-gray-100 text-black h-10 w-full xl:w-64 px-5 rounded-lg text-sm focus:outline-none">
-          <button @click="submitSearch" class="ml-2 px-4 bg-gray-500 text-white rounded-lg" type="submit">
-            Search
-          </button>
-        </div>
-
       </div>
 
-      <!-- right navbar -->
-      <div v-if="$store.getters.isLoggedIn" class="flex justify-between items-center space-x-4">
-        <router-link to="/upload" class="button leading-10">
-          Upload torrent
-        </router-link>
-        <Profile />
+      <div class="flex items-center p-4 border-b lg:hidden border-slate-50/[0.06]">
+        <button
+            type="button"
+        >
+          <span class="sr-only">Navigation</span>
+          <svg width="24" height="24">
+            <path
+                d="M5 6h14M5 12h14M5 18h14"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+            />
+          </svg>
+        </button>
       </div>
-
-      <button v-else class="button" @click="$store.dispatch('openAuthModal')">
-        Sign in
-      </button>
-
     </div>
   </div>
 </template>
 
 <script>
 import {mapState} from 'vuex'
-import Profile from "./Profile";
+import Profile from "./Profile.vue";
+import Logo from "../Logo.vue";
 
 export default {
   name: 'Navbar',
-  components: {Profile},
+  components: {Profile, Logo},
   computed: {
     ...mapState({})
   },

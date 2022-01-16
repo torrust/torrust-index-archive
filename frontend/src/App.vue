@@ -1,16 +1,19 @@
 <template>
   <div id="app">
+    <Navbar />
     <Toast/>
     <router-view />
   </div>
 </template>
 
 <script>
-import Toast from "@/components/Toast";
+import Toast from "./components/Toast.vue";
+import Navbar from "./components/navigation/Navbar.vue";
+import './main.css';
 
 export default {
   name: 'App',
-  components: {Toast},
+  components: {Toast, Navbar},
   beforeMount() {
     this.$store.dispatch('getSiteName')
   }
@@ -24,6 +27,6 @@ body.modal-open {
 }
 
 html {
-  background-color: #22252e;
+  @apply bg-slate-900;
 }
 </style>

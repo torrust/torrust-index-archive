@@ -76,8 +76,8 @@
 
 <script>
 import {XIcon} from "@vue-hero-icons/solid";
-import FileUpload from "@/components/torrent-upload/FileUpload";
-import CategorySelect from "@/components/torrent-upload/CategorySelect";
+import FileUpload from "@/components/torrent-upload/FileUpload.vue";
+import CategorySelect from "@/components/torrent-upload/CategorySelect.vue";
 import HttpService from "@/common/http-service";
 
 export default {
