@@ -12,7 +12,7 @@
             <span class="font-semibold">{{ $store.state.settings.website.name }}</span>
           </router-link>
 
-          <div class="relative hidden lg:flex items-center ml-auto">
+          <div class="relative flex items-center ml-auto">
 
 <!--            <nav class="text-sm leading-6 text-slate-200">-->
 <!--              <ul class="flex space-x-8">-->
@@ -33,13 +33,13 @@
 <!--                </li>-->
 <!--              </ul>-->
 <!--            </nav>-->
-            <div v-if="$store.getters.isLoggedIn" class="flex justify-between items-center space-x-4">
+            <div v-if="$store.getters.isLoggedIn" class="hidden lg:flex justify-between items-center space-x-4">
               <router-link to="/upload" class="px-4 py-1 bg-sky-800 text-sm text-sky-100 rounded-xl hover:shadow-lg hover:bg-sky-700 hover:shadow-sky-700/20 duration-200">
                 Upload torrent
               </router-link>
             </div>
 
-            <div class="ml-6 pl-6 flex items-center border-l border-slate-800">
+            <div class="ml-6 pl-6 flex items-center">
               <Profile />
             </div>
 
@@ -47,8 +47,9 @@
         </div>
       </div>
 
-      <div class="flex items-center p-4 border-b lg:hidden border-slate-50/[0.06]">
+      <div class="flex items-center p-4 border-b lg:hidden text-slate-400 border-slate-50/[0.06]">
         <button
+            @click="toggleSidebar"
             type="button"
         >
           <span class="sr-only">Navigation</span>
@@ -62,7 +63,11 @@
             />
           </svg>
         </button>
+        <Breadcrumb class="ml-6" />
       </div>
+
+      <Sidebar v-show="$store.state.sideBarOpen" class="block lg:hidden px-4" />
+
     </div>
   </div>
 </template>
@@ -71,10 +76,12 @@
 import {mapState} from 'vuex'
 import Profile from "./Profile.vue";
 import Logo from "../Logo.vue";
+import Breadcrumb from "../Breadcrumb.vue";
+import Sidebar from "./Sidebar.vue";
 
 export default {
   name: 'Navbar',
-  components: {Profile, Logo},
+  components: {Sidebar, Breadcrumb, Profile, Logo},
   computed: {
     ...mapState({})
   },
