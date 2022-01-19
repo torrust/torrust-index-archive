@@ -1,12 +1,12 @@
 <template>
   <div
-      class="flex fixed top-0 left-0 z-30 flex-col justify-center w-full min-h-screen bg-black bg-opacity-50"
+      class="flex fixed top-0 left-0 z-30 flex-col justify-center w-full min-h-screen bg-slate-900/90 backdrop-blur"
       :class="{hidden: !authModalOpen}"
       @click.self="$store.dispatch('closeAuthModal')"
   >
-    <div class="mx-auto mt-8 w-11/12 sm:w-full sm:max-w-md">
+    <div class="px-2 lg:px-0 w-full">
       <div
-          class="px-4 py-8 bg-secondary rounded-lg shadow sm:px-10"
+          class="px-6 py-6 text-slate-400 bg-slate-800/50 rounded-lg shadow mx-auto max-w-md"
       >
         <transition
             enter-active-class="transition ease-out duration-100 transform"
@@ -16,8 +16,8 @@
             leave-class="opacity-100 scale-100"
             leave-to-class="opacity-0 scale-95"
         >
-          <h2 v-if="isSignUp" class="text-2xl mb-4 text-center text-white">Sign Up</h2>
-          <h2 v-else class="text-2xl mb-4 text-center text-white">Sign In</h2>
+          <h2 v-if="isSignUp" class="text-2xl mb-4 font-semibold text-center text-slate-200">Sign Up</h2>
+          <h2 v-else class="text-2xl mb-4 font-semibold text-center text-slate-200">Sign In</h2>
         </transition>
 
         <form
@@ -97,17 +97,17 @@
 
           <div>
             <button type="submit"
-                    class="flex justify-center px-4 py-2 w-full text-sm font-medium rounded-md border border-transparent shadow-sm bg-red-500 hover:bg-red-400 text-white focus:outline-none focus:ring-2 focus:ring-offset-2 ">
+                    class="px-3 py-2 w-full justify-center flex flex-row text-sm text-sky-200 hover:text-white bg-sky-800 hover:bg-sky-700 rounded-md shadow-lg shadow-sky-700/50 duration-200">
               Sign {{ isSignUp ? 'up' : 'in' }}
             </button>
           </div>
         </form>
-        <div class="relative mt-4">
+        <div class="relative mt-6">
           <div class="flex relative justify-center text-sm">
-            <button v-if="isSignUp" class="px-2 text-blue-500 font-bold" @click="toggleMode">
+            <button v-if="isSignUp" class="px-2 text-slate-400 hover:text-slate-200" @click="toggleMode">
               Already have an account? Sign in
             </button>
-            <button v-else class="px-2 text-blue-500 font-bold" @click="toggleMode">
+            <button v-else class="px-2 text-slate-400 hover:text-slate-200" @click="toggleMode">
               Don't have an account? Sign up
             </button>
           </div>
@@ -155,7 +155,14 @@ export default {
 </script>
 
 <style scoped>
-.form-style {
-  @apply appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none sm:text-sm
+
+label {
+  @apply text-left text-xs font-medium uppercase tracking-wider text-slate-400 hover:text-slate-200;
+}
+
+.form-style, input:-webkit-autofill,
+input:-webkit-autofill:focus {
+  @apply mt-1 block w-full px-3 py-2 text-white bg-slate-800 border border-slate-700 rounded-md text-sm shadow-sm placeholder-slate-400
+  focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500;
 }
 </style>

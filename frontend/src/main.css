@@ -1,42 +1,21 @@
-@import url('https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-body {
-    font-family: Poppins, sans-serif;
-}
+@layer base {
+    .max-w-8xl {
+        max-width: 90rem;
+    }
 
-.overlay {
-    position: relative;
-}
+    .highlight-5 {
+        box-shadow: inset 0 1px 0 0 rgb(255 255 255 / 5%);
+    }
 
-.view-title {
-    @apply text-2xl font-semibold mb-2 lg:mb-0;
-    /*@apply text-tbk-80;*/
-}
-
-/* 1024 -1 so it doesnt show when it hits 1024px */
-@media only screen and (max-width: 1023px) {
-    .overlay:after {
-        content: " ";
-        z-index: 29;
-        display: block;
-        height: 100%;
-        top: 80px;
-        left: 0;
-        right: 0;
-        background: rgba(0, 0, 0, 0.5);
-        pointer-events: none;
-        position: fixed;
+    .highlight-10 {
+        box-shadow: inset 0 0 0 1px rgb(255 255 255 / 10%);
     }
 }
 
-.highlight-5 {
-    box-shadow: inset 0 1px 0 0 rgb(255 255 255 / 5%);
-}
-
-.highlight-10 {
-    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 10%);
+.view-title {
+    @apply text-2xl font-semibold py-6 lg:mb-0;
 }

@@ -1,15 +1,15 @@
 <template>
-  <div class="sticky top-0 z-40 w-full backdrop-blur flex-none transition-colors duration-500 lg:z-50 lg:border-b lg:border-slate-900/10 border-slate-50/[0.06] supports-backdrop-blur:bg-white/95 bg-slate-900/75">
+  <div class="sticky top-0 z-40 w-full backdrop-blur flex-none transition-colors duration-500 lg:z-50 lg:border-b lg:border-slate-50/[0.06] bg-slate-900/75">
 
     <div class="max-w-8xl mx-auto">
 
-      <div class="px-4 py-4 border-b lg:px-8 border-slate-300/10">
+      <div class="py-4 lg:px-8 border-b lg:border-0 border-slate-300/10 mx-4 lg:mx-0">
 
         <div class="relative flex items-center">
 
-          <router-link class="mr-3 flex-none w-auto overflow-hidden" to="/">
+          <router-link class="flex-none w-auto overflow-hidden text-xl text-slate-200 hover:text-white" to="/">
             <span class="sr-only">{{ $store.state.settings.website.name }}</span>
-            <span class="font-semibold text-white">{{ $store.state.settings.website.name }}</span>
+            <span class="font-semibold">{{ $store.state.settings.website.name }}</span>
           </router-link>
 
           <div class="relative hidden lg:flex items-center ml-auto">
@@ -33,6 +33,11 @@
 <!--                </li>-->
 <!--              </ul>-->
 <!--            </nav>-->
+            <div v-if="$store.getters.isLoggedIn" class="flex justify-between items-center space-x-4">
+              <router-link to="/upload" class="px-4 py-1 bg-sky-800 text-sm text-sky-100 rounded-xl hover:shadow-lg hover:bg-sky-700 hover:shadow-sky-700/20 duration-200">
+                Upload torrent
+              </router-link>
+            </div>
 
             <div class="ml-6 pl-6 flex items-center border-l border-slate-800">
               <Profile />

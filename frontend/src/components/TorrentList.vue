@@ -1,49 +1,68 @@
 <template>
-  <div class="col-span-12">
-    <div class="overflow-auto lg:overflow-visible ">
-      <table class="table w-full mb-2 border-separate text-sm whitespace-nowrap">
-        <thead class="text-gray-500">
-        <tr>
-          <th v-for="column in table_columns" :key="column" @click="changeSort(column)"
-              class="cursor-pointer text-center hover:text-white"
-              :class="{ 'text-white': sorting.name === column }"
-          >
-            <div class="flex flex-row justify-start items-center" :class="{ 'justify-center': column!=='name' }">
-              <span>{{ titleCase(column) }}</span>
-              <SortAscendingIcon size="16" v-if="sorting.name===column&&sorting.direction==='ASC'" class="ml-1" />
-              <SortDescendingIcon size="16" v-if="sorting.name===column&&sorting.direction==='DESC'" class="ml-1" />
-            </div>
-          </th>
-          <th class="">Uploader</th>
-        </tr>
-        </thead>
-        <tbody class="text-gray-300">
-        <tr
-            v-for="(torrent, index) in torrents" :key="index"
-            @click="$router.push(`/torrent/${torrent.torrent_id.toString()}`)"
-            class="hover:bg-black hover:bg-opacity-10 text-center cursor-pointer duration-100 hover:text-white"
-        >
-          <td class="font-bold text-left" :class="{ 'text-red-400': torrent.seeders === 0 }">
-            {{ torrent.title }}
-          </td>
-          <td class="text-green-400 font-bold">
-            {{ torrent.seeders }}
-          </td>
-          <td class="text-red-400 font-bold">
-            {{ torrent.leechers }}
-          </td>
-          <td class="">
-            {{ timeSince(torrent.upload_date) }} ago
-          </td>
-          <td class="">
-            {{ fileSize(torrent.file_size) }}
-          </td>
-          <td class="font-bold">
-            {{ torrent.uploader }}
-          </td>
-        </tr>
-        </tbody>
-      </table>
+  <div class="flex flex-col">
+    <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+      <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
+        <div class="overflow-hidden border-b border-slate-800">
+          <table class="min-w-full">
+            <thead class="text-slate-400 bg-slate-800/50 rounded-md">
+              <tr>
+                <th v-for="(column, index) in table_columns" :key="column" @click="changeSort(column)"
+                    scope="col" class="px-4 py-3" :class="{ 'rounded-l-md': column === 'name' }"
+                >
+                  <button
+                      class="flex flex-row justify-start items-center text-left text-xs font-medium uppercase tracking-wider hover:text-slate-200"
+                      :class="{ 'text-slate-200': sorting.name === column }"
+                  >
+                    <span>{{ column }}</span>
+                    <SortAscendingIcon size="14" v-if="sorting.name===column&&sorting.direction==='ASC'" class="ml-1" />
+                    <SortDescendingIcon size="14" v-if="sorting.name===column&&sorting.direction==='DESC'" class="ml-1" />
+                  </button>
+                </th>
+                <th scope="col" class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider rounded-r-md">
+                  Uploader
+                </th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-800 text-slate-400">
+              <tr
+                  v-for="(torrent, index) in torrents" :key="index"
+                  @click="$router.push(`/torrent/${torrent.torrent_id.toString()}`)"
+                  class="duration-200"
+              >
+                <td>
+                  <div class="flex flex-row items-center">
+<!--                    <svg v-if="torrent.category_id === 2" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">-->
+<!--                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z" />-->
+<!--                    </svg>-->
+<!--                    <svg v-if="torrent.category_id === 3" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">-->
+<!--                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />-->
+<!--                    </svg>-->
+<!--                    <svg v-if="torrent.category_id === 1" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">-->
+<!--                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />-->
+<!--                    </svg>-->
+                    <span>{{ torrent.title }}</span>
+                  </div>
+                </td>
+                <td class="text-green-500 font-light">
+                  {{ torrent.seeders }}
+                </td>
+                <td class="text-red-500 font-light">
+                  {{ torrent.leechers }}
+                </td>
+                <td>
+                  {{ timeSince(torrent.upload_date) }} ago
+                </td>
+                <td>
+                  {{ fileSize(torrent.file_size) }}
+                </td>
+                <td>
+                  {{ torrent.uploader }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -93,37 +112,11 @@ export default {
 </script>
 
 <style scoped>
-.table {
-  border-spacing: 0 15px;
+td {
+  @apply px-4 py-4 whitespace-nowrap;
 }
 
-i {
-  font-size: 1rem !important;
-}
-
-.table tr {
-  border-radius: 20px;
-}
-
-tr:hover td {
-  @apply duration-100;
-  @apply border-blue-400;
-}
-
-tr th,
-tr td {
-  @apply p-3;
-}
-
-th {
-  @apply font-light;
-}
-
-tr td:nth-child(n+6) {
-  border-radius: 0 .625rem .625rem 0;
-}
-
-tr td:nth-child(1) {
-  border-radius: .625rem 0 0 .625rem;
+tbody tr {
+  @apply cursor-pointer bg-transparent hover:bg-gradient-to-r hover:from-slate-800/10 hover:via-slate-800/30 hover:to-slate-800/10;
 }
 </style>

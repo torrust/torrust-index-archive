@@ -1,76 +1,113 @@
 <template>
-  <div class="py-6 overflow-auto fixed top-0 left-0 z-20 flex-col justify-center w-full h-screen bg-black bg-opacity-50"
-      @click.self="closeModal"
-  >
-    <div class="mt-16 mx-auto w-11/12 max-w-5xl">
-      <div class="px-5 pb-5 rounded-3xl bg-secondary flex flex-col">
-        <div class="py-5 flex flex-row items-center w-full">
-          <h1 class="text-gray-100 truncate">{{ torrent.title }}</h1>
-          <a @click="closeModal" class="ml-auto cursor-pointer text-gray-300 hover:text-white">
-            <XIcon />
-          </a>
-        </div>
+    <div class="flex flex-col">
 
-        <div v-if="isAdmin" class="pb-5">
+      <button
+          @click="closeModal"
+          class="mb-6 flex items-center text-slate-400 text-xs font-medium uppercase tracking-wider hover:text-slate-200 duration-200"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 pr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        </svg>
+        Back
+      </button>
 
-        </div>
-
-        <div class="p-4 bg-primary text-gray-300 rounded-3xl flex flex-col lg:flex-row justify-center items-center w-full overflow-auto">
-          <div class="mb-4 lg:mb-0 flex flex-row">
-            <div class="px-2 text-gray-300 text-sm">Seeders: <span class="text-green-500">{{ torrent.seeders }}</span></div>
-            <div class="px-2 text-gray-300 text-sm">Leechers: <span class="text-red-500">{{ torrent.leechers }}</span></div>
+      <div class="flex flex-row">
+<!--        <div class="basis-1 lg:basis-1/3 pr-6">-->
+<!--          <svg xmlns="http://www.w3.org/2000/svg" class="bg-black shadow-lg w-auto h-auto text-white/5 rounded-3xl" fill="none" viewBox="0 0 24 24" stroke="currentColor">-->
+<!--            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z" />-->
+<!--          </svg>-->
+<!--        </div>-->
+        <div class="w-full">
+          <div class="flex flex-col">
+            <h1 class="py-2 text-2xl font-semibold text-slate-100 truncate">{{ torrent.title }}</h1>
           </div>
-          <button type="button" @click="downloadTorrent"
-                  class="ml-0 lg:ml-auto text-white bg-green-600 border-transparent shadow-sm button hover:bg-green-500">
-            <DownloadIcon class="mr-2 -ml-1 w-5 h-5"/>
-            Torrent file
-          </button>
-          <button v-if="isAdmin" type="button" @click="deleteTorrent"
-                  class="ml-0 lg:ml-2 text-white bg-red-600 border-transparent shadow-sm button hover:bg-red-500">
-            Delete torrent
-          </button>
-          <button v-if="isAdmin" type="button" @click="banUser(torrent.uploader)"
-                  class="ml-0 lg:ml-2 text-white bg-red-600 border-transparent shadow-sm button hover:bg-red-500">
-            Ban user
-          </button>
-        </div>
 
-        <h2 class="p-4 text-gray-300">Torrent information</h2>
-        <div class="p-4 bg-primary text-sm text-gray-300 rounded-3xl flex flex-col w-full overflow-auto">
+          <div class="flex flex-col w-full">
+            <div class="flex flex-row items-center">
+              <div class="px-2 py-1 bg-slate-800 text-slate-400 rounded-md text-xs uppercase">Seeders: <span class="text-green-500">{{ torrent.seeders }}</span></div>
+              <div class="ml-2 px-2 py-1 bg-slate-800 text-slate-400 rounded-md text-xs uppercase">Leechers: <span class="text-red-500">{{ torrent.leechers }}</span></div>
+            </div>
+          </div>
+
+          <div>
+            <h2 class="py-3 text-slate-400">Downloads</h2>
+            <div class="flex flex-row items-center">
+              <button type="button" @click="downloadTorrent"
+                      class="px-3 py-2 flex flex-row text-sm text-green-200 bg-green-800 hover:bg-green-700 rounded-md shadow-lg shadow-green-700/50">
+                Torrent File
+                <DownloadIcon class="ml-2 w-5 h-5"/>
+              </button>
+              <button type="button" @click="downloadTorrent"
+                      class="ml-2 px-3 py-2 flex flex-row text-sm text-red-200 bg-red-800 hover:bg-red-700 rounded-md shadow-lg shadow-red-700/50">
+                Magnet Link
+                <svg xmlns="http://www.w3.org/2000/svg" class="ml-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <div v-if="isAdmin">
+            <h2 class="py-3 text-slate-400">Admin Tools</h2>
+            <div class="flex flex-row items-center">
+              <button type="button" @click="deleteTorrent"
+                      class="px-3 py-2 text-sm text-red-200 bg-red-800 hover:bg-red-700 rounded-md shadow-lg shadow-red-700/50">
+                Delete torrent
+              </button>
+              <button type="button" @click="banUser(torrent.uploader)"
+                      class="ml-2 px-3 py-2 text-sm text-red-200 bg-red-800 hover:bg-red-700 rounded-md shadow-lg shadow-red-700/50">
+                Ban user
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="py-3 border-b border-slate-200/5"></div>
+        <h2 class="py-3 text-slate-400">Torrent Description</h2>
+        <!--        <button v-if="isAdmin || isOwner" type="button"-->
+        <!--                class="mb-2 text-white bg-blue-600 border-transparent shadow-sm button hover:bg-blue-500">-->
+        <!--          Edit description-->
+        <!--        </button>-->
+        <div class="flex flex-col w-full text-slate-400 overflow-auto">
+          <div v-html="compiledMarkdown" class="max-w-none prose-sm prose-blue"></div>
+        </div>
+      </div>
+
+      <div>
+        <div class="py-3 border-b border-slate-200/5"></div>
+        <h2 class="py-3 text-slate-400">Torrent Information</h2>
+        <div class="text-sm text-slate-400 flex flex-col w-full overflow-auto">
           <div><span class="font-bold">Infohash:</span> {{ torrent.info_hash }}</div>
           <div><span class="font-bold mt-1">Total size:</span> {{ fileSize(torrent.file_size) }}</div>
           <div><span class="font-bold mt-1">Upload date:</span> {{ new Date(torrent.upload_date * 1000).toLocaleString() }}</div>
           <div><span class="font-bold mt-1">Uploader:</span> {{ torrent.uploader }}</div>
         </div>
+      </div>
 
-        <h2 class="p-4 text-gray-300">Torrent files</h2>
-        <div class="p-4 bg-primary text-sm text-gray-300 rounded-3xl flex flex-col w-full overflow-auto">
-          <div v-for="(file, i) in groupedFiles" :key="i">{{ file.name }} <span class="font-bold">({{ fileSize(file.length) }})</span></div>
-        </div>
-
-        <h2 class="p-4 text-gray-300">Torrent Description</h2>
-<!--        <button v-if="isAdmin || isOwner" type="button"-->
-<!--                class="mb-2 text-white bg-blue-600 border-transparent shadow-sm button hover:bg-blue-500">-->
-<!--          Edit description-->
-<!--        </button>-->
-        <div class="p-4 bg-primary text-gray-300 rounded-3xl flex flex-col w-full overflow-auto">
-          <div v-html="compiledMarkdown" class="max-w-none prose-sm prose-blue"></div>
+      <div>
+        <div class="py-3 border-b border-slate-200/5"></div>
+        <h2 class="py-3 text-slate-400">Torrent Files</h2>
+        <div class="text-sm flex flex-col w-full text-slate-400 overflow-auto">
+          <div v-for="(file, i) in groupedFiles" :key="i">- {{ file.name }} <span class="font-bold">({{ fileSize(file.length) }})</span></div>
         </div>
       </div>
+
     </div>
-  </div>
 </template>
 
 <script>
 import MarkdownIt from 'markdown-it';
-import {XIcon, DownloadIcon} from "@vue-hero-icons/outline";
+import {XIcon, DownloadIcon, ChevronLeftIcon} from "@vue-hero-icons/outline";
 import HttpService from "@/common/http-service";
 import Vue from "vue";
 import {mapState} from "vuex";
+import Breadcrumb from "../components/Breadcrumb.vue";
 
 export default {
   name: "TorrentDetail",
-  components: {XIcon, DownloadIcon},
+  components: {Breadcrumb, XIcon, DownloadIcon, ChevronLeftIcon},
   data: () => ({
     prevRoute: null,
     torrent: {

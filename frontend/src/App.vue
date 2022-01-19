@@ -2,7 +2,9 @@
   <div id="app">
     <Navbar />
     <Toast/>
-    <router-view />
+    <div>
+      <router-view />
+    </div>
   </div>
 </template>
 
@@ -21,11 +23,6 @@ export default {
 </script>
 
 <style>
-body.modal-open {
-  overflow: hidden;
-  /*padding-right: 15px;*/
-}
-
 html {
   @apply bg-slate-900;
 }
