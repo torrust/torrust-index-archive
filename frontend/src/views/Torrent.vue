@@ -167,7 +167,7 @@ export default {
       })
     },
     downloadTorrent() {
-      HttpService.getBlob(`/torrents/download/${this.torrent.torrent_id}`, (res) => {
+      HttpService.getBlob(`/torrent/download/${this.torrent.torrent_id}`, (res) => {
         const url = window.URL.createObjectURL(new Blob([res.data]));
         const link = document.createElement('a');
         link.href = url;
