@@ -11,6 +11,7 @@ use std::borrow::Cow;
 use crate::errors::{ServiceResult, ServiceError};
 use crate::common::WebAppData;
 use jsonwebtoken::{DecodingKey, decode, Validation, Algorithm};
+use sqlx::Error;
 use crate::models::response::OkResponse;
 use crate::models::response::TokenResponse;
 use crate::mailer::VerifyClaims;
@@ -91,6 +92,18 @@ pub async fn register(req: HttpRequest, payload: web::Json<Register>, app_data: 
         } else {
             Err(sqlx::Error::Database(err).into())
         };
+    }
+
+    // count accounts
+    let res_count: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM torrust_users")
+        .fetch_one(&app_data.database.pool)
+        .await?;
+
+    // make admin if first account
+    if res_count.0 == 1 {
+        let _res_make_admin = sqlx::query!("UPDATE torrust_users SET administrator = 1")
+            .execute(&app_data.database.pool)
+            .await;
     }
 
     let conn_info = req.connection_info();
