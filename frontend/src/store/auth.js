@@ -7,7 +7,7 @@ const USER = {
     admin: false,
 }
 
-const user_encoded = localStorage.getItem('user');
+const user_encoded = localStorage.getItem('torrust_user');
 const user = user_encoded ? JSON.parse(user_encoded) : { ...USER };
 
 const initialState = {
@@ -40,7 +40,7 @@ export default {
         authSuccess(state, data) {
             state.user = data;
 
-            localStorage.setItem('user', JSON.stringify(data));
+            localStorage.setItem('torrust_user', JSON.stringify(data));
 
             Vue.notify({
                 title: 'Authentication',
@@ -51,7 +51,7 @@ export default {
         logout(state) {
             state.user = { ...USER }
 
-            localStorage.removeItem('user');
+            localStorage.removeItem('torrust_user');
         }
     },
     actions: {
