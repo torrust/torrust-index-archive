@@ -1,41 +1,50 @@
 <template>
   <div>
-    <h1 class="view-title text-white">Categories</h1>
+    <h1 class="view-title text-white">Settings</h1>
 
-    <div class="w-full mt-4 max-w-2xl">
 
-      <div id="categories">
-        <h2 class="mt-6 text-xl text-white">Categories</h2>
-        <ul class="py-2">
-          <li v-for="(category, index) in categoriesState" :key="index">
-            <div class="py-2 px-4 mt-2 bg-primary rounded-xl flex flex-row">
-              <span class="text-white">{{ category.name }} ({{ category.num_torrents }})</span>
-              <a @click="deleteCategory(category.name)" class="ml-auto px-1 rounded-lg bg-opacity-10 text-red-400 hover:text-red-500 text-center cursor-pointer">
-                X
-              </a>
-            </div>
-          </li>
-        </ul>
-        <div class="flex flex-row">
-          <input v-model="newCategory" class="py-2 px-4 appearance-none w-full bg-white text-gray-700 rounded-xl leading-tight focus:outline-none" type='text' placeholder='Enter category'>
-          <button @click="addCategory" class="button ml-2 px-4 bg-green-600 hover:bg-green-500 text-white rounded-xl">Add</button>
-        </div>
-      </div>
+<!--    <ul class="flex flex-wrap border-b border-slate-200/5">-->
+<!--      <li class="">-->
+<!--        <button @click="() => {this.tab = 'general'}" class="tab">General</button>-->
+<!--      </li>-->
+<!--      <li class="ml-2">-->
+<!--        <button @click="() => {this.tab = 'advanced'}" class="tab">Advanced</button>-->
+<!--      </li>-->
+<!--    </ul>-->
 
-      <h1 class="mt-6 view-title text-white">Site Settings</h1>
-      <button @click="saveSettings" :disabled="settingsChanged || savingSettings" class="changes bg-blue-500 disabled:opacity-50">Save Changes</button>
-      <button @click="clearSettings" :disabled="settingsChanged || savingSettings" class="changes ml-2 bg-red-500 disabled:opacity-50">Clear Changes</button>
+
+    <div class="w-full max-w-2xl">
 
       <div id="general-settings">
         <h2 class="text-xl text-white">General</h2>
         <label>Site Name</label>
         <div class="py-1 flex flex-row">
           <input type='text' v-model="settings.website.name">
+          <button @click="saveSettings" :disabled="settingsChanged || savingSettings" class="button ml-2 px-4 bg-sky-600 hover:bg-sky-500 text-white rounded-md disabled:opacity-50">Save</button>
+        </div>
+
+        <label>Categories</label>
+        <ul class="py-2">
+          <li v-for="(category, index) in categoriesState" :key="index">
+            <div class="py-2 px-4 mt-2 bg-slate-800/50 rounded-md flex flex-row">
+              <span class="text-white">{{ category.name }} ({{ category.num_torrents }})</span>
+              <svg xmlns="http://www.w3.org/2000/svg" @click="deleteCategory(category.name)" class="h-6 w-6 ml-auto px-1 rounded-lg bg-opacity-10 text-red-400 hover:text-red-500 text-center cursor-pointer" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+            </div>
+          </li>
+        </ul>
+        <div class="flex flex-row">
+          <input v-model="newCategory" type='text' placeholder='Enter category'>
+          <button @click="addCategory" :disabled="!newCategory" class="button ml-2 px-4 bg-sky-600 hover:bg-sky-500 text-white rounded-md disabled:opacity-50">Add</button>
         </div>
       </div>
 
       <div id="advanced-settings">
+        <div class="py-3 border-b border-slate-200/5"></div>
         <h2 class="mt-6 text-xl text-white">Advanced</h2>
+        <button @click="saveSettings" :disabled="settingsChanged || savingSettings" class="changes bg-sky-600 disabled:opacity-50">Save Changes</button>
+        <button @click="clearSettings" :disabled="settingsChanged || savingSettings" class="changes ml-2 bg-red-500 disabled:opacity-50">Clear Changes</button>
 
         <!-- Tracker -->
         <h3>Tracker</h3>
@@ -144,7 +153,7 @@
           <input type='text' v-model="settings.mail.reply_to">
         </div>
 
-        <button @click="saveSettings" :disabled="settingsChanged || savingSettings" class="changes bg-blue-500 disabled:opacity-50">Save Changes</button>
+        <button @click="saveSettings" :disabled="settingsChanged || savingSettings" class="changes bg-sky-600 disabled:opacity-50">Save Changes</button>
         <button @click="clearSettings" :disabled="settingsChanged || savingSettings" class="changes ml-2 bg-red-500 disabled:opacity-50">Clear Changes</button>
 
       </div>
@@ -160,6 +169,7 @@ import HttpService from "@/common/http-service";
 export default {
   name: "Settings",
   data: () => ({
+    tab: 'general',
     newCategory: '',
     savingSettings: false,
     settings: {
@@ -277,11 +287,15 @@ h3 {
   @apply py-1 flex flex-row;
 }
 
-input {
-  @apply py-2 px-4 appearance-none w-full bg-white text-gray-700 rounded-xl leading-tight focus:outline-none;
+button.changes {
+  @apply mt-2 py-2 px-4 text-white rounded-md;
 }
 
-button.changes {
-  @apply mt-2 py-2 px-4 text-white rounded-xl;
+.tab {
+  @apply inline-block py-2 px-4 text-sm font-medium text-center text-sky-500 bg-slate-800 rounded-t-md;
+}
+
+input {
+  @apply py-2 px-4 appearance-none w-full text-gray-700 rounded-md leading-tight focus:outline-none;
 }
 </style>

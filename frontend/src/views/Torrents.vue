@@ -1,5 +1,6 @@
 <template>
-  <div class="bg-primary p-6 rounded-3xl">
+  <div>
+    <Breadcrumb />
     <div v-if="search" class="flex flex-row">
       <h2 class="text-gray-400">Search results for '{{ this.search }}'</h2>
       <button @click="clearSearch" class="px-2 ml-2 text-sm rounded-xl bg-red-500 bg-opacity-10 text-red-400 hover:text-red-500">Clear search</button>
@@ -15,14 +16,15 @@
 </template>
 
 <script>
-import TorrentList from "../components/TorrentList";
-import Pagination from "../components/Pagination";
+import TorrentList from "../components/TorrentList.vue";
+import Pagination from "../components/Pagination.vue";
 import HttpService from "@/common/http-service";
 import {mapState} from "vuex";
+import Breadcrumb from "../components/Breadcrumb.vue";
 
 export default {
   name: "Torrents",
-  components: {Pagination, TorrentList},
+  components: {Pagination, TorrentList, Breadcrumb},
   data: () => ({
     sorting: {
       name: 'uploaded',

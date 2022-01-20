@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    .max-w-8xl {
+        max-width: 90rem;
+    }
+
+    .highlight-5 {
+        box-shadow: inset 0 1px 0 0 rgb(255 255 255 / 5%);
+    }
+
+    .highlight-10 {
+        box-shadow: inset 0 0 0 1px rgb(255 255 255 / 10%);
+    }
+}
+
+.view-title {
+    @apply text-2xl font-semibold py-6 lg:mb-0;
+}

@@ -1,8 +1,9 @@
 <template>
-  <div>
-    <h1 class="view-title text-white">Welcome to Torrust</h1>
+  <div class="text-slate-500">
+    <h1 class="view-title text-white">Welcome to {{ $store.state.settings.website.name }}</h1>
 
     <p class="py-2 text-white">Welcome to my torrent index.</p>
+
   </div>
 </template>
 

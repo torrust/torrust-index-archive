@@ -28,22 +28,20 @@ export default {
 }
 </script>
 
-<style lang="scss">
-.notification {
-  &.success {
-    @apply bg-green-500;
-  }
+<style scoped>
+.success {
+  @apply bg-green-500;
+}
 
-  &.warn {
-    @apply bg-yellow-500;
-  }
+.warn {
+  @apply bg-yellow-500;
+}
 
-  &.info {
-    @apply bg-blue-400;
-  }
+.info {
+  @apply bg-blue-400;
+}
 
-  &.error {
-    @apply bg-red-500;
-  }
+.error {
+  @apply bg-red-500;
 }
 </style>

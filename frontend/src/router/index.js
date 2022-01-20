@@ -1,11 +1,11 @@
-import Layout from "@/components/Layout";
-import TorrentDetail from "@/views/Torrent";
-import CategoryOverview from "@/views/CategoryOverview";
-import TorrentUpload from "@/views/TorrentUpload";
+import Layout from "../components/Layout.vue";
+import TorrentDetail from "../views/Torrent.vue";
+import CategoryOverview from "../views/CategoryOverview.vue";
+import TorrentUpload from "../views/TorrentUpload.vue";
 import VueRouter from "vue-router";
-import Torrents from "@/views/Torrents";
-import Welcome from "@/views/Welcome";
-import Settings from "@/views/Settings";
+import Torrents from "../views/Torrents.vue";
+import Welcome from "../views/Welcome.vue";
+import Settings from "../views/Settings.vue";
 
 const routes = [
     {

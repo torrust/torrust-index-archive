@@ -1,50 +1,57 @@
 <template>
-  <div class="mt-20 lg:mt-0 w-2/3 md:w-1/3 lg:w-64 fixed md:top-0 md:left-0 h-screen lg:block bg-white z-0" :class="{ 'hidden': !sideBarOpen }" id="main-nav">
-
-    <div class="w-full h-20 flex px-4 items-center">
-      <a class="text-white font-semibold text-xl mx-auto" href="/">{{ $store.state.settings.website.name }}</a>
-    </div>
+  <nav class="lg:text-sm lg:leading-6 relative">
 
     <!-- search bar -->
-    <div class="px-4 flex md:hidden flex-col">
-      <input v-model="searchQuery" type="search" name="search" placeholder="Search Torrents.."
-             class="bg-gray-100 text-black h-10 w-full xl:w-64 px-5 rounded-lg text-sm focus:outline-none">
-      <button @click="submitSearch" class="mt-2 py-2 bg-primary-400 text-white rounded-lg" type="submit">
-        Search
-      </button>
+    <div class="sticky top-0 -ml-0.5 pointer-events-none">
+      <div class="h-10 bg-slate-900"></div>
+      <div class="bg-slate-900 relative pointer-events-auto">
+        <div class="w-full flex items-center text-sm leading-6 text-slate-400 bg-slate-800/50 rounded-md ring-1 ring-slate-900/10 py-1.5 pl-2 pr-3 hover:ring-sky-400 focus:ring-sky-400 duration-200">
+          <svg width="24" height="24" fill="none" aria-hidden="true" class="mr-2 flex-none">
+            <path d="m19 19-3.5-3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            <circle cx="11" cy="11" r="6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></circle>
+          </svg>
+          <input @keyup.enter="submitSearch" v-model="searchQuery" type="text" name="search" placeholder="Search torrents..."
+                 class="bg-transparent text-white font-light w-full focus:outline-none">
+        </div>
+      </div>
+      <div class="h-8 bg-gradient-to-b from-white dark:from-slate-900"></div>
     </div>
 
-    <div class="mt-6 px-4 text-gray-300">
-      <router-link :to="`/`" class="mt-2 w-full flex items-center h-10 pl-4 rounded-lg cursor-pointer" exact-active-class="text-white bg-secondary">
-        <span>Home</span>
-      </router-link>
-      <router-link :to="`/torrents/popular`" class="mt-2 w-full flex items-center h-10 pl-4 rounded-lg cursor-pointer" exact-active-class="text-white bg-secondary">
-        <span>Most Popular</span>
-      </router-link>
-      <router-link :to="`/torrents/recent`" class="mt-2 w-full flex items-center h-10 pl-4 rounded-lg cursor-pointer" exact-active-class="text-white bg-secondary">
-        <span>Most Recent</span>
-      </router-link>
-      <router-link :to="`/torrents`" class="mt-2 w-full flex items-center h-10 pl-4 rounded-lg cursor-pointer" exact-active-class="text-white bg-secondary">
-        <span>Browse Torrents</span>
-      </router-link>
-      <ul v-if="$route.name === 'TorrentList'" id="category-filters" class="p-4 mt-2 bg-secondary rounded-xl">
-        <h3 class="py-2">Categories</h3>
-        <li v-for="category in categories"
-            @click="selectFilter(category.name)"
-            class="cursor-pointer text-gray-400 hover:text-white"
-            :key="category.name">
-          <span class="">{{ titleCase(category.name) }} ({{ category.num_torrents }})</span>
-          <input type="checkbox" class="regular-checkbox" :checked="filterActive(category.name)">
-        </li>
-        <li v-if="filters.length > 0">
-          <button @click="clearFilters" class="w-full rounded-lg bg-red-500 bg-opacity-10 text-red-400 hover:text-red-500 text-center cursor-pointer">Clear filters</button>
-        </li>
-      </ul>
-<!--      <router-link :to="'/categories'" class="mt-2 w-full flex items-center h-10 pl-4 rounded-lg cursor-pointer" exact-active-class="text-white bg-secondary">-->
-<!--        <span>Browse Categories</span>-->
-<!--      </router-link>-->
-    </div>
-  </div>
+    <!-- items -->
+    <ul>
+      <li>
+        <router-link :to="`/torrents/popular`">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd" />
+          </svg>
+          <span class="ml-2">Most Popular</span>
+        </router-link>
+      </li>
+      <li>
+        <router-link :to="`/torrents/recent`">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd" />
+          </svg>
+          <span class="ml-2">Most Recent</span>
+        </router-link>
+      </li>
+      <li v-show="$router.currentRoute.fullPath.includes('torrents')" class="mt-6">
+        <h3 class="py-2 text-slate-200 font-semibold">Categories</h3>
+        <ul v-if="$route.name === 'TorrentList'" id="category-filters" class="">
+          <li v-for="category in categories"
+              @click="selectFilter(category.name)"
+              class="cursor-pointer text-slate-400 hover:text-white"
+              :key="category.name">
+            <span class="">{{ titleCase(category.name) }} ({{ category.num_torrents }})</span>
+            <input type="checkbox" class="" :checked="filterActive(category.name)">
+          </li>
+          <li v-if="filters.length > 0">
+            <button @click="clearFilters" class="w-full rounded-lg bg-red-500 bg-opacity-10 text-red-400 hover:text-red-500 text-center cursor-pointer">Clear filters</button>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </nav>
 </template>
 
 <script>
@@ -88,12 +95,21 @@ export default {
       this.filters = [];
       this.$store.commit('setCategoryFilters', this.filters);
     },
-  }
+  },
 }
 </script>
 
 <style scoped>
+li a {
+  @apply mb-4 flex text-slate-400 font-semibold hover:text-white items-center lg:text-sm lg:leading-6;
+}
+
+.router-link-active {
+  @apply text-sky-400;
+}
+
 .regular-checkbox {
+  @apply text-sky-400;
   -webkit-appearance: none;
   background-color: rgba(0, 0, 0, .1);
   border: none;

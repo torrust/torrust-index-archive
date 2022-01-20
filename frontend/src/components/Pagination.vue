@@ -1,9 +1,9 @@
 <template>
   <!-- This example requires Tailwind CSS v2.0+ -->
-  <div class="flex items-center justify-between">
+  <div class="py-6 flex items-center justify-between">
     <div class="flex-1 flex items-center sm:justify-between justify-end">
       <div class="hidden sm:block">
-        <p class="text-sm text-gray-500">
+        <p class="text-sm text-slate-400">
           Showing
           <span class="font-medium">{{ (currentPage * pageSize) - pageSize }}</span>
           to
@@ -175,11 +175,10 @@ export default {
 <style scoped>
 
 .page-button {
-  @apply relative inline-flex items-center px-4 py-2 text-sm font-medium text-gray-300 hover:text-white outline-none;
-  background-color: #2e3139;
+  @apply relative inline-flex items-center px-4 py-2 text-sm font-medium text-slate-400 hover:text-slate-200 outline-none;
 }
 
 .page-button[disabled] {
-  @apply text-blue-500;
+  @apply text-sky-500;
 }
 </style>
