@@ -17,7 +17,7 @@ Torrust is a suite of client-server software for hosting online torrent indexes.
 * [X] Website customization (*__partly implemented__*)
 
 ### Installation
-Read the [docs](https://torrust.com/installation/) for settting up the torrent index backend/frontend. Refer to the tracker [README](https://github.com/torrust/torrust-tracker) for the tracker install.
+Read the [installation documentation](https://torrust.com/installation/) for setting up the torrent index backend/frontend + [Torrust tracker](https://github.com/torrust/torrust-tracker).
 
 ### Need
 

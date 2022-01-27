@@ -11,7 +11,6 @@ use std::borrow::Cow;
 use crate::errors::{ServiceResult, ServiceError};
 use crate::common::WebAppData;
 use jsonwebtoken::{DecodingKey, decode, Validation, Algorithm};
-use sqlx::Error;
 use crate::models::response::OkResponse;
 use crate::models::response::TokenResponse;
 use crate::mailer::VerifyClaims;
