@@ -43,4 +43,4 @@ Anyone will be able to host a (private) BitTorrent tracker and online torrent in
 *Coming soon.*
 
 ### Credits
-This project was a joint effort by [Nautilus Cyberneering GmbH](https://nautilus-cyberneering.de/) and [DUTCH BITS](https://dutchbits.nl).
+This project was a joint effort by [Nautilus Cyberneering GmbH](https://nautilus-cyberneering.de/) and [Dutch Bits](https://dutchbits.nl).
