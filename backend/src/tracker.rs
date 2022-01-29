@@ -6,30 +6,35 @@ use crate::errors::ServiceError;
 use crate::models::user::User;
 use serde::{Serialize, Deserialize};
 
-pub struct TrackerService {
-    cfg: Arc<Configuration>,
-    database: Arc<Database>,
-}
-
 #[derive(Debug, Serialize, Deserialize)]
 pub struct TorrentInfo {
     pub info_hash: String,
-    //pub completed: i64,
     pub seeders: i64,
+    pub completed: i64,
     pub leechers: i64,
-    pub peers: Vec<Vec<Peer>>,
+    pub peers: Vec<Peer>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Peer {
-    pub id: Option<String>,
-    pub client: Option<String>,
-    pub ip: Option<String>,
+    pub peer_id: Option<PeerId>,
+    pub peer_addr: Option<String>,
     pub updated: Option<i64>,
     pub uploaded: Option<i64>,
     pub downloaded: Option<i64>,
     pub left: Option<i64>,
     pub event: Option<String>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct PeerId {
+    pub id: Option<String>,
+    pub client: Option<String>
+}
+
+pub struct TrackerService {
+    cfg: Arc<Configuration>,
+    database: Arc<Database>,
 }
 
 impl TrackerService {
@@ -106,6 +111,7 @@ impl TrackerService {
         Ok(tracker_key)
     }
 
+    // get torrent info from tracker api
     pub async fn get_torrent_info(&self, info_hash: &str) -> Result<TorrentInfo, ServiceError> {
         let settings = self.cfg.settings.read().await;
 
@@ -127,7 +133,8 @@ impl TrackerService {
                 let _ = self.database.update_tracker_info(info_hash, torrent_info.seeders, torrent_info.leechers).await;
                 Ok(torrent_info)
             },
-            Err(_) => {
+            Err(e) => {
+                eprintln!("{:?}", e);
                 let _ = self.database.update_tracker_info(info_hash, 0, 0).await;
                 Err(ServiceError::TorrentNotFound)
             }

@@ -1,6 +1,6 @@
 {
-  "name": "torrust-web",
-  "private": true,
+  "name": "torrust",
+  "private": false,
   "scripts": {
     "dev": "vite",
     "build": "vite build",
