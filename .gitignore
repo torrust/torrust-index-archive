@@ -10,3 +10,4 @@
 /backend/data.db-shm
 /backend/data.db-wal
 /backend/uploads
+/backend/target
