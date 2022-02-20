@@ -5,7 +5,7 @@
 <!--        <a class="hover:text-slate-400" href="">Terms of Service</a>-->
 <!--        <p class="sm:ml-4 sm:pl-4 sm:border-l sm:border-slate-200/5"><a class="hover:text-slate-400" href="">Privacy Policy</a></p>-->
 <!--      </div>-->
-      <a class="hover:text-slate-400" href="https://github.com/torrust/torrust">Torrust GitHub</a>
+      <a class="hover:text-slate-400" href="https://github.com/torrust/torrust">Powered by Torrust</a>
     </div>
   </div>
 </template>
