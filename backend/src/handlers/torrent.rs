@@ -142,8 +142,10 @@ pub async fn get_torrents(params: Query<DisplayInfo>, app_data: WebAppData) -> S
     }))
 }
 
-
 pub async fn get_torrent(req: HttpRequest, app_data: WebAppData) -> ServiceResult<impl Responder> {
+    // optional
+    let user = app_data.auth.get_user_from_request(&req).await;
+
     let settings = app_data.cfg.settings.read().await;
 
     let torrent_id = get_torrent_id_from_request(&req)?;
@@ -153,9 +155,12 @@ pub async fn get_torrent(req: HttpRequest, app_data: WebAppData) -> ServiceResul
 
     let filepath = format!("{}/{}", settings.storage.upload_path, torrent_response.torrent_id.to_string() + ".torrent");
 
+    let tracker_url = settings.tracker.url.clone();
+
     drop(settings);
 
     if let Ok(torrent) = parse_torrent::read_torrent_from_file(&filepath) {
+        // add torrent file/files to response
         if let Some(files) = torrent.info.files {
             torrent_response.files = Some(files);
         } else {
@@ -168,7 +173,33 @@ pub async fn get_torrent(req: HttpRequest, app_data: WebAppData) -> ServiceResul
 
             torrent_response.files = Some(vec![file]);
         }
+
+        // add additional torrent tracker/trackers to response
+        if let Some(trackers) = torrent.announce_list {
+            for tracker in trackers {
+                torrent_response.trackers.push(tracker[0].clone());
+            }
+        }
     }
+
+    // add self-hosted tracker url
+    if user.is_ok() {
+        let unwrapped_user = user.unwrap();
+        let personal_announce_url = app_data.tracker.get_personal_announce_url(&unwrapped_user).await?;
+        // add personal tracker url to front of vec
+        torrent_response.trackers.insert(0, personal_announce_url);
+    } else {
+        // add tracker to front of vec
+        torrent_response.trackers.insert(0, tracker_url);
+    }
+
+    // add magnet link
+    let mut magnet = format!("magnet:?xt=urn:btih:{}&dn={}", torrent_response.info_hash, urlencoding::encode(&torrent_response.title));
+    // add trackers from torrent file to magnet link
+    for tracker in &torrent_response.trackers {
+        magnet.push_str(&format!("&tr={}", urlencoding::encode(tracker)));
+    }
+    torrent_response.magnet_link = magnet;
 
     // get realtime seeders and leechers
     if let Ok(torrent_info) = app_data.tracker.get_torrent_info(&torrent_response.info_hash).await {

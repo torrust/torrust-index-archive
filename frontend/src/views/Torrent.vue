@@ -37,13 +37,13 @@
                 Torrent File
                 <DownloadIcon class="ml-2 w-5 h-5"/>
               </button>
-              <button type="button" @click="downloadTorrent"
+              <a type="button" :href="torrent.magnet_link"
                       class="ml-2 px-3 py-2 flex flex-row text-sm text-red-200 bg-red-800 hover:bg-red-700 rounded-md shadow-lg shadow-red-700/50">
                 Magnet Link
                 <svg xmlns="http://www.w3.org/2000/svg" class="ml-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-              </button>
+              </a>
             </div>
           </div>
 
@@ -111,15 +111,19 @@ export default {
   data: () => ({
     prevRoute: null,
     torrent: {
-      name: "",
+      torrent_id: 0,
+      uploader: "",
+      info_hash: "",
+      title: "",
+      description: "",
+      category_id: 0,
+      upload_date: Date.now(),
+      file_size: 0,
       seeders: 0,
       leechers: 0,
-      date: Date.now(),
-      size: 0,
-      uploader: "null",
-      image: "",
-      categories: [],
       files: [],
+      trackers: [],
+      magnet_link: "",
     },
     md: new MarkdownIt(),
   }),

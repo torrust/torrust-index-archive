@@ -47,6 +47,8 @@ pub struct TorrentResponse {
     pub seeders: i64,
     pub leechers: i64,
     pub files: Option<Vec<File>>,
+    pub trackers: Vec<String>,
+    pub magnet_link: String,
 }
 
 impl TorrentResponse {
@@ -62,7 +64,9 @@ impl TorrentResponse {
             file_size: torrent_listing.file_size,
             seeders: torrent_listing.seeders,
             leechers: torrent_listing.leechers,
-            files: None
+            files: None,
+            trackers: vec![],
+            magnet_link: "".to_string(),
         }
     }
 }
