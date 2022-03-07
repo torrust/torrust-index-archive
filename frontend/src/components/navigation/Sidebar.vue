@@ -1,14 +1,16 @@
 <template>
   <nav class="lg:text-sm lg:leading-6 relative">
 
-    <router-link class="block py-4 text-2xl text-white" to="/">
-      <span class="font-semibold">{{ $store.state.settings.website.name }}</span>
-    </router-link>
+    <div class="py-4">
+      <router-link class="block text-2xl text-white" to="/">
+        <span class="font-semibold">{{ $store.state.settings.website.name }}</span>
+      </router-link>
+    </div>
 
     <!-- search bar -->
     <div class="sticky top-0 py-4 -ml-0.5 pointer-events-none">
       <div class="relative pointer-events-auto">
-        <div class="w-full flex items-center text-sm text-slate-400 bg-slate-800/50 rounded-md ring-1 ring-slate-900/10 py-1.5 pl-2 pr-3 hover:ring-sky-400 focus:ring-sky-400 duration-200">
+        <div class="w-full flex items-center text-sm text-slate-400 bg-slate-800/50 rounded-md ring-1 ring-slate-900/10 py-1.5 pl-2 pr-3 transition duration-200 hover:ring-sky-400 focus:ring-sky-400">
           <svg width="22" height="22" fill="none" aria-hidden="true" class="mr-2 flex-none">
             <path d="m19 19-3.5-3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
             <circle cx="11" cy="11" r="6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></circle>
