@@ -24,34 +24,26 @@
 
     <!-- items -->
     <ul>
-      <li>
-        <router-link :to="`/torrents/popular`">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd" />
-          </svg>
+      <li class="nav">
+        <button @click="goTo('/torrents/popular')" :class="{ 'active': $route.params.sorting === 'popular' }">
+          <FireIcon class="h-5 w-5 opacity-50" />
           <span class="ml-2">Most Popular</span>
-        </router-link>
+        </button>
       </li>
-      <li>
-        <router-link :to="`/torrents/recent`">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd" />
-          </svg>
+      <li class="nav">
+        <button @click="goTo('/torrents/recent')" :class="{ 'active': $route.params.sorting === 'recent' }">
+          <ClockIcon class="h-5 w-5 opacity-50" />
           <span class="ml-2">Most Recent</span>
-        </router-link>
+        </button>
       </li>
       <li v-show="$router.currentRoute.fullPath.includes('torrents')" class="mt-6">
-        <h3 class="py-2 text-slate-200 font-semibold">Categories</h3>
-        <ul v-if="$route.name === 'Browse Torrents'" id="category-filters" class="">
-          <li v-for="category in categories"
-              @click="selectFilter(category.name)"
-              class="cursor-pointer text-slate-400 hover:text-white"
-              :key="category.name">
-            <span class="">{{ titleCase(category.name) }} ({{ category.num_torrents }})</span>
-            <input type="checkbox" class="" :checked="filterActive(category.name)">
-          </li>
-          <li v-if="filters.length > 0">
-            <button @click="clearFilters" class="w-full rounded-lg bg-red-500 bg-opacity-10 text-red-400 hover:text-red-500 text-center cursor-pointer">Clear filters</button>
+        <h3 class="py-2 text-slate-400 font-semibold">Categories</h3>
+        <ul>
+          <li v-for="category in categories">
+            <button @click="selectCategory(category.name)" :class="{ 'active': categoryFilters.indexOf(category.name) > -1 }">
+              <span>{{ titleCase(category.name.toString()) }}</span>
+              <span class="ml-auto">{{ category.num_torrents }}</span>
+            </button>
           </li>
         </ul>
       </li>
@@ -62,9 +54,11 @@
 <script>
 import { mapState } from 'vuex'
 import HttpService from '@/common/http-service';
+import { ClockIcon, FireIcon } from "@vue-hero-icons/outline"
 
 export default {
   name: 'Sidebar',
+  components: {ClockIcon, FireIcon},
   created() {
     HttpService.get('/category', (res) => {
       const categories = res.data.data;
@@ -85,51 +79,30 @@ export default {
         this.$router.push(`/torrents?search=${this.searchQuery}`)
       }
     },
-    filterActive(category) {
-      return this.filters.indexOf(category) > -1
-    },
-    selectFilter(category) {
-      if (this.filters.indexOf(category) > -1) {
-        this.filters.splice(this.filters.indexOf(category), 1);
-      } else {
-        this.filters.push(category);
+    selectCategory(category) {
+      this.$store.commit('setCategoryFilters', [category]);
+      if (this.$route.name !== 'Browse Torrents') {
+        this.$router.push(`/torrents`)
+      } else if (this.$route.params.sorting) {
+        this.$router.replace(`/torrents`)
       }
-      this.$store.commit('setCategoryFilters', this.filters);
     },
-    clearFilters() {
-      this.filters = [];
-      this.$store.commit('setCategoryFilters', this.filters);
-    },
+    goTo(url) {
+      this.$store.commit('setCategoryFilters', []);
+      if (this.$route.path !== url) {
+        this.$router.push(url)
+      }
+    }
   },
 }
 </script>
 
 <style scoped>
-li a {
-  @apply mb-4 flex text-slate-400 font-semibold hover:text-white items-center lg:text-sm lg:leading-6;
+button {
+  @apply px-3 py-1.5 mb-2 w-full flex text-slate-400 border border-slate-800 rounded-md hover:text-white items-center lg:text-sm lg:leading-6;
 }
 
-ul li .router-link-active {
-  @apply text-sky-400;
-}
-
-.regular-checkbox {
-  @apply text-sky-400;
-  -webkit-appearance: none;
-  background-color: rgba(0, 0, 0, .1);
-  border: none;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.05), inset 0px -15px 10px -12px rgba(0,0,0,0.05);
-  padding: 9px;
-  border-radius: 3px;
-  display: inline-block;
-  position: relative;
-}
-
-#category-filters li {
-  @apply px-4 py-1 flex flex-row justify-between;
-}
-
-#category-filters li input {
-  @apply text-left
+button.active {
+  @apply bg-sky-500 text-white;
 }
 </style>

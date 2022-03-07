@@ -4,21 +4,20 @@
       <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
         <div class="overflow-hidden border-b border-slate-800">
           <table class="min-w-full">
-            <thead class="text-slate-400 bg-slate-800/50 rounded-md">
+            <thead class="text-white rounded-md border-b border-t border-slate-800">
               <tr>
                 <th v-for="(column, index) in table_columns" :key="column" @click="changeSort(column)"
                     scope="col" class="px-4 py-3" :class="{ 'rounded-l-md': column === 'name' }"
                 >
                   <button
-                      class="flex flex-row justify-start items-center text-left text-xs font-medium uppercase tracking-wider hover:text-slate-200"
-                      :class="{ 'text-slate-200': sorting.name === column }"
+                      class="flex flex-row justify-start items-center text-left text-sm font-semibold capitalize"
                   >
                     <span>{{ column }}</span>
                     <SortAscendingIcon size="14" v-if="sorting.name===column&&sorting.direction==='ASC'" class="ml-1" />
                     <SortDescendingIcon size="14" v-if="sorting.name===column&&sorting.direction==='DESC'" class="ml-1" />
                   </button>
                 </th>
-                <th scope="col" class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider rounded-r-md">
+                <th scope="col" class="px-4 py-3 text-left text-sm font-semibold capitalize rounded-r-md">
                   Uploader
                 </th>
               </tr>

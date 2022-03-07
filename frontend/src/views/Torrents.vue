@@ -1,9 +1,15 @@
 <template>
-  <div>
-    <Breadcrumb />
+  <div class="mt-10">
     <div v-if="search" class="flex flex-row">
       <h2 class="text-gray-400">Search results for '{{ this.search }}'</h2>
       <button @click="clearSearch" class="px-2 ml-2 text-sm rounded-xl bg-red-500 bg-opacity-10 text-red-400 hover:text-red-500">Clear search</button>
+    </div>
+    <div class="flex flex-row">
+      <FilterCategory />
+<!--      <button disabled class="filter ml-2">-->
+<!--        <FilterIcon size="16" class="mr-1 opacity-50" />-->
+<!--        Filters-->
+<!--      </button>-->
     </div>
     <TorrentList class="mt-4" v-if="torrents.results.length > 0" :torrents="torrents.results" :sorting="sorting" :update-sorting="updateSorting"/>
     <Pagination v-if="torrents.results.length > 0" :current-page.sync="currentPage" :total-pages="totalPages" :total-results="torrents.total" :page-size="pageSize" />
@@ -17,10 +23,12 @@ import Pagination from "../components/Pagination.vue";
 import HttpService from "@/common/http-service";
 import {mapState} from "vuex";
 import Breadcrumb from "../components/Breadcrumb.vue";
+import { AdjustmentsIcon, FilterIcon } from "@vue-hero-icons/outline";
+import FilterCategory from "../components/FilterCategory.vue";
 
 export default {
   name: "Torrents",
-  components: {Pagination, TorrentList, Breadcrumb},
+  components: {FilterCategory, Pagination, TorrentList, Breadcrumb, AdjustmentsIcon, FilterIcon},
   data: () => ({
     sorting: {
       name: 'uploaded',
@@ -62,7 +70,6 @@ export default {
       this.$router.replace({ query: {...this.$route.query, search: ''}})
     },
     updateSorting(sorting) {
-      console.log(sorting);
       this.sorting = sorting;
       this.loadTorrents(this.currentPage);
     }
@@ -101,5 +108,7 @@ export default {
 </script>
 
 <style scoped>
-
+.filter {
+  @apply px-3 py-1.5 text-slate-400 text-sm font-semibold border border-slate-800 rounded-md flex items-center relative cursor-pointer transition duration-200 hover:text-slate-200 hover:border-slate-200;
+}
 </style>
