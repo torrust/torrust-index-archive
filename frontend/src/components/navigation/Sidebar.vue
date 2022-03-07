@@ -36,11 +36,11 @@
           <span class="ml-2">Most Recent</span>
         </button>
       </li>
-      <li v-show="$router.currentRoute.fullPath.includes('torrents')" class="mt-6">
+      <li class="mt-6">
         <h3 class="py-2 text-slate-400 font-semibold">Categories</h3>
         <ul>
           <li v-for="category in categories">
-            <button @click="selectCategory(category.name)" :class="{ 'active': categoryFilters.indexOf(category.name) > -1 }">
+            <button @click="selectCategory(category.name)" :class="{ 'active': $route.name === 'Browse Torrents' && categoryFilters.indexOf(category.name) > -1 }">
               <span>{{ titleCase(category.name.toString()) }}</span>
               <span class="ml-auto">{{ category.num_torrents }}</span>
             </button>
