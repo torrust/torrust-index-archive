@@ -1,7 +1,5 @@
 <template>
   <div>
-    <h1 class="view-title text-white">Categories</h1>
-
     <div v-if="categories.length === 0" class="relative w-full text-center p-12 font-medium text-sm text-gray-700">
       Loading...
     </div>

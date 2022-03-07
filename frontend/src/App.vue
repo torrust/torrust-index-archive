@@ -1,6 +1,5 @@
 <template>
   <div id="app">
-    <Navbar />
     <Toast/>
     <div>
       <router-view />

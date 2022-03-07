@@ -1,8 +1,5 @@
 <template>
   <div>
-    <h1 class="view-title text-white">Settings</h1>
-
-
 <!--    <ul class="flex flex-wrap border-b border-slate-200/5">-->
 <!--      <li class="">-->
 <!--        <button @click="() => {this.tab = 'general'}" class="tab">General</button>-->

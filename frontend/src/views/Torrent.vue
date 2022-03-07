@@ -143,7 +143,7 @@ export default {
   methods: {
     closeModal() {
       // check if user was browsing or torrents or used a direct link
-      if (this.prevRoute.name === 'TorrentList') {
+      if (this.prevRoute.name === 'Browse Torrents') {
         this.$router.go(-1);
       } else {
         this.$router.push('/torrents/');

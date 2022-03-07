@@ -1,12 +1,15 @@
 <template>
   <nav class="lg:text-sm lg:leading-6 relative">
 
+    <router-link class="block py-4 text-2xl text-white" to="/">
+      <span class="font-semibold">{{ $store.state.settings.website.name }}</span>
+    </router-link>
+
     <!-- search bar -->
-    <div class="sticky top-0 -ml-0.5 pointer-events-none">
-      <div class="h-10 bg-slate-900"></div>
-      <div class="bg-slate-900 relative pointer-events-auto">
-        <div class="w-full flex items-center text-sm leading-6 text-slate-400 bg-slate-800/50 rounded-md ring-1 ring-slate-900/10 py-1.5 pl-2 pr-3 hover:ring-sky-400 focus:ring-sky-400 duration-200">
-          <svg width="24" height="24" fill="none" aria-hidden="true" class="mr-2 flex-none">
+    <div class="sticky top-0 py-4 -ml-0.5 pointer-events-none">
+      <div class="relative pointer-events-auto">
+        <div class="w-full flex items-center text-sm text-slate-400 bg-slate-800/50 rounded-md ring-1 ring-slate-900/10 py-1.5 pl-2 pr-3 hover:ring-sky-400 focus:ring-sky-400 duration-200">
+          <svg width="22" height="22" fill="none" aria-hidden="true" class="mr-2 flex-none">
             <path d="m19 19-3.5-3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
             <circle cx="11" cy="11" r="6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></circle>
           </svg>
@@ -14,7 +17,7 @@
                  class="bg-transparent text-white font-light w-full focus:outline-none">
         </div>
       </div>
-      <div class="h-8 bg-gradient-to-b from-white dark:from-slate-900"></div>
+      <div class="h-4 bg-gradient-to-b from-white dark:from-slate-900"></div>
     </div>
 
     <!-- items -->
@@ -37,7 +40,7 @@
       </li>
       <li v-show="$router.currentRoute.fullPath.includes('torrents')" class="mt-6">
         <h3 class="py-2 text-slate-200 font-semibold">Categories</h3>
-        <ul v-if="$route.name === 'TorrentList'" id="category-filters" class="">
+        <ul v-if="$route.name === 'Browse Torrents'" id="category-filters" class="">
           <li v-for="category in categories"
               @click="selectFilter(category.name)"
               class="cursor-pointer text-slate-400 hover:text-white"
@@ -104,7 +107,7 @@ li a {
   @apply mb-4 flex text-slate-400 font-semibold hover:text-white items-center lg:text-sm lg:leading-6;
 }
 
-.router-link-active {
+ul li .router-link-active {
   @apply text-sky-400;
 }
 

@@ -5,11 +5,7 @@
       <h2 class="text-gray-400">Search results for '{{ this.search }}'</h2>
       <button @click="clearSearch" class="px-2 ml-2 text-sm rounded-xl bg-red-500 bg-opacity-10 text-red-400 hover:text-red-500">Clear search</button>
     </div>
-    <div class="flex justify-between">
-      <h1 class="view-title text-white">Browse Torrents</h1>
-    </div>
-    <router-view/>
-    <TorrentList v-if="torrents.results.length > 0" :torrents="torrents.results" :sorting="sorting" :update-sorting="updateSorting"/>
+    <TorrentList class="mt-4" v-if="torrents.results.length > 0" :torrents="torrents.results" :sorting="sorting" :update-sorting="updateSorting"/>
     <Pagination v-if="torrents.results.length > 0" :current-page.sync="currentPage" :total-pages="totalPages" :total-results="torrents.total" :page-size="pageSize" />
     <div v-else class="py-6 text-gray-300">This category has no results.</div>
   </div>

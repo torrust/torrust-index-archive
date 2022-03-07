@@ -25,22 +25,22 @@ const routes = [
             },
             {
                 path: 'categories',
-                name: 'CategoryOverview',
+                name: "Category's",
                 component: CategoryOverview
             },
             {
                 path: 'torrent/:torrentId',
-                name: 'TorrentDetail',
+                name: 'Torrent',
                 component: TorrentDetail
             },
             {
                 path: 'torrents/:sorting?',
-                name: 'TorrentList',
+                name: 'Browse Torrents',
                 component: Torrents,
             },
             {
                 path: 'upload',
-                name: 'TorrentUpload',
+                name: 'Upload Torrent',
                 component: TorrentUpload
             },
         ]
