@@ -5,7 +5,7 @@ import TorrentUpload from "../views/TorrentUpload.vue";
 import VueRouter from "vue-router";
 import Torrents from "../views/Torrents.vue";
 import Welcome from "../views/Welcome.vue";
-import Settings from "../views/Settings.vue";
+import Settings from "../views/settings/Settings.vue";
 
 const routes = [
     {

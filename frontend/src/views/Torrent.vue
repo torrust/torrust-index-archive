@@ -1,16 +1,5 @@
 <template>
     <div class="flex flex-col">
-
-      <button
-          @click="closeModal"
-          class="mb-6 flex items-center text-slate-400 text-xs font-medium uppercase tracking-wider hover:text-slate-200 duration-200"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 pr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-        </svg>
-        Back
-      </button>
-
       <div class="flex flex-row">
 <!--        <div class="basis-1 lg:basis-1/3 pr-6">-->
 <!--          <svg xmlns="http://www.w3.org/2000/svg" class="bg-black shadow-lg w-auto h-auto text-white/5 rounded-3xl" fill="none" viewBox="0 0 24 24" stroke="currentColor">-->
@@ -18,31 +7,36 @@
 <!--          </svg>-->
 <!--        </div>-->
         <div class="w-full">
-          <div class="flex flex-col">
-            <h1 class="py-2 text-2xl font-semibold text-slate-100 truncate">{{ torrent.title }}</h1>
-          </div>
+          <h1 class="py-2 text-xl font-semibold text-white truncate">{{ torrent.title }}</h1>
+          <h2 class="font-semibold text-sm text-slate-400 uppercase">{{ torrent.info_hash }}</h2>
 
-          <div class="flex flex-col w-full">
-            <div class="flex flex-row items-center">
-              <div class="px-2 py-1 bg-slate-800 text-slate-400 rounded-md text-xs uppercase">Seeders: <span class="text-green-500">{{ torrent.seeders }}</span></div>
-              <div class="ml-2 px-2 py-1 bg-slate-800 text-slate-400 rounded-md text-xs uppercase">Leechers: <span class="text-red-500">{{ torrent.leechers }}</span></div>
+          <div class="mt-4 px-2 py-4 flex flex-col flex-col-reverse lg:flex-row border border-slate-800 rounded-md">
+            <div class="px-3 w-full lg:w-1/3 flex flex-col justify-start">
+              <div class="detail">Total size:<span class="value">{{ fileSize(torrent.file_size) }}</span></div>
+              <div class="detail">Upload Date:<span class="value">{{ new Date(torrent.upload_date * 1000).toLocaleString() }}</span></div>
+              <div class="detail border-none">Uploader:<span class="value">{{ torrent.uploader }}</span></div>
             </div>
-          </div>
-
-          <div>
-            <h2 class="py-3 text-slate-400">Downloads</h2>
-            <div class="flex flex-row items-center">
+            <div class="px-3 w-full lg:w-1/3 hidden lg:flex flex-col justify-start">
+              <div class="detail">Downloads:<span class="value italic">coming soon</span></div>
+              <div class="detail">Comments:<span class="value italic">coming soon</span></div>
+              <div class="detail border-none">Last Updated:<span class="value italic">coming soon</span></div>
+            </div>
+            <div class="px-3 w-full mb-2 lg:mb-0 lg:w-1/3 flex flex-col items-center">
+              <div class="w-full flex flex-row items-center">
+                <div class="status">Seeders: <span class="ml-auto text-green-500">{{ torrent.seeders }}</span></div>
+                <div class="ml-2 status">Leechers: <span class="ml-auto text-red-500">{{ torrent.leechers }}</span></div>
+              </div>
               <button type="button" @click="downloadTorrent"
-                      class="px-3 py-2 flex flex-row text-sm text-green-200 bg-green-800 hover:bg-green-700 rounded-md shadow-lg shadow-green-700/50">
-                Torrent File
-                <DownloadIcon class="ml-2 w-5 h-5"/>
+                      class="mt-2 px-3 py-1.5 w-full flex flex-row justify-center font-semibold text-sm text-white text-center bg-green-600 border border-green-600 rounded-md transition duration-200 hover:shadow-lg hover:shadow-green-600/25">
+                <DownloadIcon class="justify-self-start mr-2 w-5 h-5"/>
+                <span>Torrent Download</span>
               </button>
               <a type="button" :href="torrent.magnet_link"
-                      class="ml-2 px-3 py-2 flex flex-row text-sm text-red-200 bg-red-800 hover:bg-red-700 rounded-md shadow-lg shadow-red-700/50">
-                Magnet Link
-                <svg xmlns="http://www.w3.org/2000/svg" class="ml-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                 class="mt-2 px-3 py-1.5 w-full flex flex-row justify-center font-semibold text-sm text-white text-center bg-red-600 border border-red-600 rounded-md transition duration-200 hover:shadow-lg hover:shadow-red-600/25">
+                <svg xmlns="http://www.w3.org/2000/svg" class="mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
+                <span>Magnet Download</span>
               </a>
             </div>
           </div>
@@ -72,17 +66,6 @@
         <!--        </button>-->
         <div class="flex flex-col w-full text-slate-400 overflow-auto">
           <div v-html="compiledMarkdown" class="max-w-none prose-sm prose-blue"></div>
-        </div>
-      </div>
-
-      <div>
-        <div class="py-3 border-b border-slate-200/5"></div>
-        <h2 class="py-3 text-slate-400">Torrent Information</h2>
-        <div class="text-sm text-slate-400 flex flex-col w-full overflow-auto">
-          <div><span class="font-bold">Infohash:</span> {{ torrent.info_hash }}</div>
-          <div><span class="font-bold mt-1">Total size:</span> {{ fileSize(torrent.file_size) }}</div>
-          <div><span class="font-bold mt-1">Upload date:</span> {{ new Date(torrent.upload_date * 1000).toLocaleString() }}</div>
-          <div><span class="font-bold mt-1">Uploader:</span> {{ torrent.uploader }}</div>
         </div>
       </div>
 
@@ -141,14 +124,6 @@ export default {
     document.body.classList.remove("modal-open");
   },
   methods: {
-    closeModal() {
-      // check if user was browsing or torrents or used a direct link
-      if (this.prevRoute.name === 'Browse Torrents') {
-        this.$router.go(-1);
-      } else {
-        this.$router.push('/torrents/');
-      }
-    },
     getTorrent(torrentId) {
       const self = this;
       HttpService.get(`/torrent/${torrentId}`, (res) => {
@@ -238,5 +213,17 @@ export default {
 <style scoped>
 .button {
   @apply inline-flex justify-center px-4 py-2 text-sm font-medium rounded-md border shadow-sm;
+}
+
+.status {
+  @apply px-2 py-1.5 w-1/2 flex flex-row bg-slate-800 text-slate-400 capitalize border border-slate-800 rounded-md text-sm uppercase;
+}
+
+.detail {
+  @apply py-2 flex flex-row font-semibold text-sm text-slate-200 border-b border-slate-800;
+}
+
+.detail > .value {
+  @apply ml-auto text-slate-400;
 }
 </style>

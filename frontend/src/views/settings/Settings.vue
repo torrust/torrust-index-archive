@@ -1,14 +1,13 @@
 <template>
   <div>
 <!--    <ul class="flex flex-wrap border-b border-slate-200/5">-->
-<!--      <li class="">-->
-<!--        <button @click="() => {this.tab = 'general'}" class="tab">General</button>-->
+<!--      <li>-->
+<!--        <router-link :to="'/settings/general'" class="tab">General</router-link>-->
 <!--      </li>-->
 <!--      <li class="ml-2">-->
-<!--        <button @click="() => {this.tab = 'advanced'}" class="tab">Advanced</button>-->
+<!--        <router-link :to="'/settings/categories'" class="tab">Categories</router-link>-->
 <!--      </li>-->
 <!--    </ul>-->
-
 
     <div class="w-full max-w-2xl">
 
