@@ -1,5 +1,5 @@
 <template>
-  <div class="flex justify-center px-6 pt-5 pb-6 mt-1 rounded-md border-2 border-gray-300 border-dashed"
+  <div class="flex justify-center px-6 pt-5 pb-6 mt-1 rounded-md border-2 border-slate-800 border-dashed"
        :class="{'border-primary-200': filedrag, 'bg-primary-200': filedrag, 'border-red-500': error}"
        @dragover="dragover"
        @dragleave="dragleave"
@@ -29,7 +29,7 @@
         <img v-if="type === 'image'" :src="fileUrl(file)" :alt="file.name"
              class="h-20 w-auto"
         />
-        <p class="truncate">{{ file.name }}</p>
+        <p class="text-slate-400 truncate">{{ file.name }}</p>
         <a @click="$refs.file.click()"
            class="relative font-medium text-blue-600 rounded-md cursor-pointer hover:text-primary-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-primary-500">
           <span>Upload a file</span>

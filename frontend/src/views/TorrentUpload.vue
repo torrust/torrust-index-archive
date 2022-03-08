@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col w-full">
+  <div class="mt-10 flex flex-col w-full">
     <div class="max-w-5xl">
       <form class="space-y-4">
         <div>
@@ -7,26 +7,26 @@
             Title
           </label>
           <div class="mt-1">
-            <input id="title" name="title" type="text" v-model="form.title"
-                   class="py-2 px-4 appearance-none w-full text-gray-700 rounded-md leading-tight focus:outline-none">
+            <input id="title" name="title" type="text" v-model="form.title" class="input">
           </div>
         </div>
 
         <div>
           <label for="description" class="block font-medium text-gray-700">
-            Description
+            Description (Markdown supported)
           </label>
           <div class="mt-1">
             <textarea id="description" name="description" rows="8" v-model="form.description"
-                      class="py-2 px-4 appearance-none w-full text-gray-700 rounded-md leading-tight focus:outline-none"></textarea>
+                      class="input"></textarea>
           </div>
-          <p class="mt-2 text-sm text-gray-500">Markdown is supported.</p>
         </div>
 
-        <label class="block font-medium text-gray-700">
-          Category
-        </label>
-        <CategorySelect class="mt-0" :category.sync="form.category"/>
+        <div>
+          <label class="block font-medium text-gray-700">
+            Category
+          </label>
+          <CategorySelect class="py-1" :category.sync="form.category"/>
+        </div>
 <!--            <div>-->
 <!--              <label class="block font-medium text-gray-700">-->
 <!--                Cover picture-->
@@ -42,10 +42,10 @@
         </div>
 
         <div class="py-3 flex flex-row justify-end">
-          <button @click="closeModal" type="button" class="px-3 py-2 flex flex-row text-sm text-red-200 bg-red-600 hover:text-white hover:bg-red-500 rounded-md shadow-lg shadow-red-600/50 duration-200">
+          <button @click="closeModal" type="button" class="px-3 py-2 flex flex-row text-sm text-red-200 bg-red-600 rounded-md hover:text-white hover:bg-red-500 hover:shadow-lg shadow-red-600/50 transition duration-200">
             Cancel
           </button>
-          <button :disabled="!formValid || uploading" @click="submitForm" type="button" class="ml-2 px-3 py-2 flex flex-row text-sm text-green-200 bg-green-800 hover:bg-green-700 rounded-md shadow-lg shadow-green-700/50 disabled:shadow-none disabled:text-gray-100 disabled:bg-gray-400 disabled:hover:bg-gray-400">
+          <button :disabled="!formValid || uploading" @click="submitForm" type="button" class="ml-2 px-3 py-2 flex flex-row bg-sky-500 text-sm text-white rounded-md transition duration-200 hover:shadow-lg hover:shadow-sky-500/25 disabled:shadow-none disabled:text-gray-100 disabled:bg-gray-400 disabled:hover:bg-gray-400">
             <svg v-if="uploading" class="animate-spin h-5 w-5 mr-3" viewBox="0 0 24 24">
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
               <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -118,5 +118,9 @@ export default {
 <style scoped>
 label {
   @apply text-left text-xs font-medium uppercase tracking-wider text-slate-400 hover:text-slate-200;
+}
+
+.input {
+  @apply py-2 px-4 bg-slate-800/50 appearance-none w-full text-slate-200 rounded-md leading-tight focus:outline-none;
 }
 </style>
