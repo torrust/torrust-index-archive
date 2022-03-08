@@ -47,6 +47,12 @@ export default new class {
         return axios.post(url, data).then(callback).catch(this.errorHandler);
     }
 
+    put(url, data, callback) {
+        this.setToken();
+
+        return axios.put(url, data).then(callback).catch(this.errorHandler);
+    }
+
     delete(url, data, callback) {
         this.setToken();
 

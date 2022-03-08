@@ -24,6 +24,7 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
                 .route(web::get().to(download_torrent)))
             .service(web::resource("/{id}")
                 .route(web::get().to(get_torrent))
+                .route(web::put().to(update_torrent))
                 .route(web::delete().to(delete_torrent)))
     );
     cfg.service(
@@ -212,6 +213,42 @@ pub async fn get_torrent(req: HttpRequest, app_data: WebAppData) -> ServiceResul
     }))
 }
 
+#[derive(Debug, Deserialize)]
+pub struct TorrentUpdate {
+    description: String
+}
+
+pub async fn update_torrent(req: HttpRequest, payload: web::Json<TorrentUpdate>, app_data: WebAppData) -> ServiceResult<impl Responder> {
+    let user = app_data.auth.get_user_from_request(&req).await?;
+
+    let torrent_id = get_torrent_id_from_request(&req)?;
+
+    let torrent_listing = app_data.database.get_torrent_by_id(torrent_id).await?;
+
+    // check if user is owner or administrator
+    if torrent_listing.uploader != user.username && !user.administrator { return Err(ServiceError::Unauthorized) }
+
+    // update torrent
+    let res = sqlx::query!(
+        "UPDATE torrust_torrents SET description = $1 WHERE torrent_id = $2",
+        payload.description,
+        torrent_id
+    )
+        .execute(&app_data.database.pool)
+        .await;
+
+    if let Err(_) = res { return Err(ServiceError::TorrentNotFound) }
+
+    if res.unwrap().rows_affected() == 0 { return Err(ServiceError::TorrentNotFound) }
+
+    let mut torrent_response = TorrentResponse::from_listing(torrent_listing);
+    torrent_response.description = Some(payload.description.clone());
+
+    Ok(HttpResponse::Ok().json(OkResponse {
+        data: torrent_response
+    }))
+}
+
 pub async fn delete_torrent(req: HttpRequest, app_data: WebAppData) -> ServiceResult<impl Responder> {
     let user = app_data.auth.get_user_from_request(&req).await?;
 
@@ -227,7 +264,7 @@ pub async fn delete_torrent(req: HttpRequest, app_data: WebAppData) -> ServiceRe
         .execute(&app_data.database.pool)
         .await;
 
-    if let Err(_) = res { return Err(ServiceError::UsernameNotFound) }
+    if let Err(_) = res { return Err(ServiceError::TorrentNotFound) }
     if res.unwrap().rows_affected() == 0 { return Err(ServiceError::TorrentNotFound) }
 
     Ok(HttpResponse::Ok().json(OkResponse {

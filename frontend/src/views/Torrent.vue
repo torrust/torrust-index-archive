@@ -11,7 +11,7 @@
           <h2 class="font-semibold text-xs lg:text-sm text-slate-400 uppercase">{{ torrent.info_hash }}</h2>
 
           <div class="py-4 flex flex-col flex-col-reverse lg:flex-row">
-            <div class="px-1 py-1 w-full lg:w-2/3 flex flex-col lg:flex-row flex-row bg-slate-800/50 rounded-md shadow-md">
+            <div class="px-1 py-1 w-full lg:w-2/3 flex flex-col lg:flex-row flex-row bg-slate-800/50 rounded-md">
               <div class="px-3 w-full lg:w-1/2 flex flex-col justify-start">
                 <div class="detail">Total size:<span class="value">{{ fileSize(torrent.file_size) }}</span></div>
                 <div class="detail">Upload Date:<span class="value">{{ new Date(torrent.upload_date * 1000).toLocaleString() }}</span></div>
@@ -62,17 +62,20 @@
 
       <div>
         <div v-if="isAdmin" class="py-3 border-b border-slate-200/5"></div>
-        <h2 class="section">Torrent Description</h2>
+        <div class="flex flex-row items-center">
+          <h2 class="section">Torrent Description</h2>
+          <button v-if="torrent.uploader === user.username && !editingDescription" @click="editDescription" class="ml-auto edit">Edit</button>
+          <div v-if="torrent.uploader === user.username && editingDescription" class="ml-auto flex flex-row space-x-2">
+            <button @click="() => (editingDescription = false)" class="ml-auto edit">Cancel</button>
+            <button :disabled="newDescription === torrent.description" @click="saveDescription" class="ml-auto edit">Save</button>
+          </div>
+        </div>
         <div class="py-3 border-t border-slate-200/5"></div>
-        <!--        <button v-if="isAdmin || isOwner" type="button"-->
-        <!--                class="mb-2 text-white bg-blue-600 border-transparent shadow-sm button hover:bg-blue-500">-->
-        <!--          Edit description-->
-        <!--        </button>-->
-<!--        <div class="flex flex-col w-full text-slate-400 overflow-auto">-->
-<!--          <div v-html="compiledMarkdown" class="max-w-none prose-sm prose-blue"></div>-->
-<!--        </div>-->
-        <MarkdownItVue v-if="torrent.description" :content="torrent.description" class="md-body max-w-none prose-sm prose-blue" />
-        <span v-else class="text-slate-400 italic">Empty</span>
+        <textarea v-if="editingDescription" rows="16" v-model="newDescription" class="input"></textarea>
+        <h2 v-if="editingDescription" class="section">Markdown Preview</h2>
+        <MarkdownItVue v-if="editingDescription" :content="newDescription" class="px-4 py-4 md-body max-w-none prose-sm prose-blue bg-slate-800/50 rounded-md" />
+        <MarkdownItVue v-if="!editingDescription && torrent.description" :content="torrent.description" class="md-body max-w-none prose-sm prose-blue" />
+        <span v-if="!editingDescription && !torrent.description" class="text-slate-400 italic">Empty</span>
       </div>
 
       <div>
@@ -100,6 +103,8 @@ export default {
   name: "TorrentDetail",
   components: {Breadcrumb, XIcon, DownloadIcon, ChevronLeftIcon, MarkdownItVue},
   data: () => ({
+    editingDescription: false,
+    newDescription: '',
     prevRoute: null,
     torrent: {
       torrent_id: 0,
@@ -175,6 +180,21 @@ export default {
         self.closeModal();
       })
     },
+    editDescription() {
+      this.newDescription = this.torrent.description;
+      this.editingDescription = true;
+    },
+    saveDescription() {
+      HttpService.put(`/torrent/${this.torrent.torrent_id}`, { description: this.newDescription }, (res) => {
+        this.editingDescription = false;
+        Vue.notify({
+          title: 'Updated',
+          text: 'Torrent updated successfully.',
+          type: 'success',
+        })
+        this.torrent.description = res.data.data.description;
+      }).catch(() => {})
+    }
   },
   computed: {
     ...mapState({
@@ -229,6 +249,14 @@ export default {
 
 h2.section {
   @apply py-3 font-semibold text-xl text-slate-400;
+}
+
+button.edit {
+  @apply px-4 py-1.5 rounded-md border border-slate-800 text-sm text-slate-400 flex items-center relative cursor-pointer transition duration-200 hover:text-slate-200 hover:border-slate-200 disabled:bg-slate-700 disabled:border-slate-700 disabled:text-slate-400;
+}
+
+textarea.input {
+  @apply py-2 px-4 bg-slate-800/50 appearance-none w-full text-slate-200 rounded-md leading-tight focus:outline-none;
 }
 
 .markdown-body {
