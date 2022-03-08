@@ -23,7 +23,7 @@
 
         <div v-if="form.description">
           <label>Markdown Preview</label>
-          <MarkdownItVue :content="form.description" class="mt-1 px-4 py-4 md-body max-w-none prose-sm prose-blue bg-slate-800/50 rounded-md" />
+          <MarkdownItVue :content="form.description" class="mt-1 px-4 py-4 max-h-64 overflow-auto md-body max-w-none prose-sm prose-blue bg-slate-800/50 rounded-md" />
         </div>
 
         <div>

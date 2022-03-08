@@ -74,7 +74,7 @@
         <div class="py-3 border-t border-slate-200/5"></div>
         <textarea v-if="editingDescription" rows="8" v-model="newDescription" class="input"></textarea>
         <h2 v-if="editingDescription" class="section">Markdown Preview</h2>
-        <MarkdownItVue v-if="editingDescription" :content="newDescription" class="px-4 py-4 md-body max-w-none prose-sm prose-blue bg-slate-800/50 rounded-md" />
+        <MarkdownItVue v-if="editingDescription" :content="newDescription" class="px-4 py-4 max-h-64 overflow-auto md-body max-w-none prose-sm prose-blue bg-slate-800/50 rounded-md" />
         <MarkdownItVue v-if="!editingDescription && torrent.description" :content="torrent.description" class="md-body max-w-none prose-sm prose-blue" />
         <span v-if="!editingDescription && !torrent.description" class="text-slate-400 italic">Empty</span>
       </div>
