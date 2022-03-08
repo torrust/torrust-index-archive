@@ -20,7 +20,7 @@
           <span>Settings</span>
         </router-link>
         <hr class="my-2 border-slate-700" />
-        <button @click="$store.dispatch('logout')" class="py-1.5 bg-red-500 bg-opacity-10 text-red-400 text-red-500 border border-transparent rounded-md transition duration-200 hover:text-red-500">Sign out</button>
+        <button @click="$store.dispatch('logout')" class="py-1.5 bg-red-500 bg-opacity-10 text-red-400 border border-transparent rounded-md transition duration-200 hover:text-red-500">Sign out</button>
       </div>
     </div>
 

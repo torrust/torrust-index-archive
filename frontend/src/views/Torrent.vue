@@ -6,9 +6,9 @@
 <!--            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z" />-->
 <!--          </svg>-->
 <!--        </div>-->
-        <div class="w-full">
+        <div class="w-full overflow-hidden">
           <h1 class="py-2 text-xl font-semibold text-white truncate">{{ torrent.title }}</h1>
-          <h2 class="font-semibold text-sm text-slate-400 uppercase">{{ torrent.info_hash }}</h2>
+          <h2 class="font-semibold text-xs lg:text-sm text-slate-400 uppercase">{{ torrent.info_hash }}</h2>
 
           <div class="py-4 flex flex-col flex-col-reverse lg:flex-row">
             <div class="px-1 py-1 w-full lg:w-2/3 flex flex-col lg:flex-row flex-row border border-slate-800 rounded-md">
@@ -17,13 +17,13 @@
                 <div class="detail">Upload Date:<span class="value">{{ new Date(torrent.upload_date * 1000).toLocaleString() }}</span></div>
                 <div class="detail lg:border-none">Uploader:<span class="value">{{ torrent.uploader }}</span></div>
               </div>
-              <div class="px-3 w-full lg:w-1/2 hidden lg:flex flex-col justify-start">
+              <div class="px-3 w-full lg:w-1/2 flex flex-col justify-start">
                 <div class="detail">Downloads:<span class="value italic">coming soon</span></div>
                 <div class="detail">Comments:<span class="value italic">coming soon</span></div>
                 <div class="detail border-none">Last Updated:<span class="value italic">coming soon</span></div>
               </div>
             </div>
-            <div class="px-0 lg:pl-3 w-full mb-2 lg:mb-0 lg:w-1/3 flex flex-col items-center">
+            <div class="px-0 lg:pl-3 w-full mb-4 lg:mb-0 lg:w-1/3 flex flex-col items-center">
               <div class="w-full flex flex-row items-center">
                 <div class="status">Seeders: <span class="ml-auto text-green-500">{{ torrent.seeders }}</span></div>
                 <div class="ml-2 status">Leechers: <span class="ml-auto text-red-500">{{ torrent.leechers }}</span></div>
@@ -44,7 +44,8 @@
           </div>
 
           <div v-if="isAdmin">
-            <h2 class="py-3 text-slate-400">Admin Tools</h2>
+            <h2 class="py-3 text-white">Admin Tools</h2>
+            <div class="py-3 border-t border-slate-200/5"></div>
             <div class="flex flex-row items-center">
               <button type="button" @click="deleteTorrent"
                       class="px-3 py-2 text-sm text-white bg-red-600 rounded-md hover:shadow-lg hover:shadow-red-600/25 transition duration-200">
@@ -60,20 +61,24 @@
       </div>
 
       <div>
-        <div class="py-3 border-b border-slate-200/5"></div>
-        <h2 class="py-3 text-slate-400">Torrent Description</h2>
+        <div v-if="isAdmin" class="py-3 border-b border-slate-200/5"></div>
+        <h2 class="py-3 text-white">Torrent Description</h2>
+        <div class="py-3 border-t border-slate-200/5"></div>
         <!--        <button v-if="isAdmin || isOwner" type="button"-->
         <!--                class="mb-2 text-white bg-blue-600 border-transparent shadow-sm button hover:bg-blue-500">-->
         <!--          Edit description-->
         <!--        </button>-->
-        <div class="flex flex-col w-full text-slate-400 overflow-auto">
-          <div v-html="compiledMarkdown" class="max-w-none prose-sm prose-blue"></div>
-        </div>
+<!--        <div class="flex flex-col w-full text-slate-400 overflow-auto">-->
+<!--          <div v-html="compiledMarkdown" class="max-w-none prose-sm prose-blue"></div>-->
+<!--        </div>-->
+        <MarkdownItVue v-if="torrent.description" :content="torrent.description" class="md-body max-w-none prose-sm prose-blue" />
+        <span v-else class="text-slate-400 italic">Empty</span>
       </div>
 
       <div>
         <div class="py-3 border-b border-slate-200/5"></div>
-        <h2 class="py-3 text-slate-400">Torrent Files</h2>
+        <h2 class="py-3 text-white">Torrent Files</h2>
+        <div class="py-3 border-t border-slate-200/5"></div>
         <div class="text-sm flex flex-col w-full text-slate-400 overflow-auto">
           <div v-for="(file, i) in groupedFiles" :key="i">- {{ file.name }} <span class="font-bold">({{ fileSize(file.length) }})</span></div>
         </div>
@@ -83,16 +88,17 @@
 </template>
 
 <script>
-import MarkdownIt from 'markdown-it';
 import {XIcon, DownloadIcon, ChevronLeftIcon} from "@vue-hero-icons/outline";
 import HttpService from "@/common/http-service";
 import Vue from "vue";
 import {mapState} from "vuex";
 import Breadcrumb from "../components/Breadcrumb.vue";
+import MarkdownItVue from "markdown-it-vue";
+import 'markdown-it-vue/dist/markdown-it-vue.css';
 
 export default {
   name: "TorrentDetail",
-  components: {Breadcrumb, XIcon, DownloadIcon, ChevronLeftIcon},
+  components: {Breadcrumb, XIcon, DownloadIcon, ChevronLeftIcon, MarkdownItVue},
   data: () => ({
     prevRoute: null,
     torrent: {
@@ -110,7 +116,6 @@ export default {
       trackers: [],
       magnet_link: "",
     },
-    md: new MarkdownIt(),
   }),
   beforeRouteEnter(to, from, next) {
     next(vm => {
@@ -184,9 +189,6 @@ export default {
     torrentId() {
       return this.$route.params.torrentId;
     },
-    compiledMarkdown() {
-      return this.md.render(this.torrent.description || "This torrent has no description.");
-    },
     groupedFiles() {
       let files = [];
 
@@ -212,11 +214,7 @@ export default {
 }
 </script>
 
-<style scoped>
-.button {
-  @apply inline-flex justify-center px-4 py-2 text-sm font-medium rounded-md border shadow-sm;
-}
-
+<style>
 .status {
   @apply px-2 py-1.5 w-1/2 flex flex-row bg-slate-800 text-slate-400 capitalize border border-slate-800 rounded-md text-sm uppercase;
 }
@@ -227,5 +225,33 @@ export default {
 
 .detail > .value {
   @apply ml-auto text-slate-400;
+}
+
+.markdown-body {
+  @apply text-slate-400;
+}
+
+.markdown-body a {
+  @apply text-sky-400;
+}
+
+.markdown-body blockquote {
+  @apply text-slate-400 border-slate-600;
+}
+
+.markdown-body hr {
+  @apply bg-slate-200/50;
+}
+
+.markdown-body h1, .markdown-body h2, .markdown-body h3, .markdown-body h4, .markdown-body h5, .markdown-body h6 {
+  @apply border-slate-200/50;
+}
+
+.markdown-body .highlight pre, .markdown-body pre {
+  @apply bg-slate-800 text-slate-400 rounded-md;
+}
+
+.markdown-body table tr, .markdown-body table td, .markdown-body table th {
+  @apply bg-slate-800 border-slate-700;
 }
 </style>

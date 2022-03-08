@@ -2,11 +2,14 @@
   <div
       class="flex fixed top-0 left-0 z-30 flex-col justify-center w-full min-h-screen bg-slate-900/90 backdrop-blur"
       :class="{hidden: !authModalOpen}"
-      @click.self="$store.dispatch('closeAuthModal')"
+      @click.self="close"
   >
     <div class="px-2 lg:px-0 w-full">
+      <div class="px-6 mb-6 mx-auto max-w-md text-center">
+        <h1 class="text-white text-3xl font-bold">{{ $store.state.settings.website.name }}</h1>
+      </div>
       <div
-          class="px-6 py-6 text-slate-400 bg-slate-800/50 rounded-lg shadow mx-auto max-w-md"
+          class="px-6 py-6 text-slate-400 bg-slate-800 rounded-md shadow mx-auto max-w-md"
       >
         <transition
             enter-active-class="transition ease-out duration-100 transform"
@@ -95,9 +98,15 @@
             </div>
           </transition>
 
-          <div>
+          <div class="flex flex-row space-x-2">
+            <button type="button"
+                class="px-3 py-2 w-full justify-center flex flex-row text-sm text-red-200 hover:text-white bg-red-700 hover:bg-red-600 rounded-md hover:shadow-lg hover:shadow-red-700/25 transition duration-200"
+                @click="close"
+            >
+              Cancel
+            </button>
             <button type="submit"
-                    class="px-3 py-2 w-full justify-center flex flex-row text-sm text-sky-200 hover:text-white bg-sky-800 hover:bg-sky-700 rounded-md shadow-lg shadow-sky-700/50 duration-200">
+                    class="px-3 py-2 w-full justify-center flex flex-row text-sm text-sky-200 hover:text-white bg-sky-800 hover:bg-sky-700 rounded-md hover:shadow-lg hover:shadow-sky-700/25 transition duration-200">
               Sign {{ isSignUp ? 'up' : 'in' }}
             </button>
           </div>
@@ -149,7 +158,10 @@ export default {
       } else {
         this.$store.dispatch('login', {login: this.form.email, password: this.form.password});
       }
-    }
+    },
+    close() {
+      this.$store.dispatch('closeAuthModal');
+    },
   }
 }
 </script>
