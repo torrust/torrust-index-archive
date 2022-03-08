@@ -13,7 +13,7 @@
     </div>
     <TorrentList class="mt-4" v-if="torrents.results.length > 0" :torrents="torrents.results" :sorting="sorting" :update-sorting="updateSorting"/>
     <Pagination v-if="torrents.results.length > 0" :current-page.sync="currentPage" :total-pages="totalPages" :total-results="torrents.total" :page-size="pageSize" />
-    <div v-else class="py-6 text-gray-300">This category has no results.</div>
+    <div v-else class="py-6 text-slate-400">This category has no results.</div>
   </div>
 </template>
 

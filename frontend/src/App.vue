@@ -17,6 +17,12 @@ export default {
   components: {Toast, Navbar},
   beforeMount() {
     this.$store.dispatch('getSiteName')
+  },
+  watch:{
+    $route (to, from){
+      this.$store.dispatch('getCategories');
+      this.$store.dispatch('getSiteName');
+    }
   }
 }
 </script>

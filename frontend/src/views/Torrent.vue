@@ -1,5 +1,6 @@
 <template>
-    <div class="flex flex-col">
+  <div>
+    <div v-if="torrent.info_hash" class="flex flex-col">
       <div class="flex flex-row">
 <!--        <div class="basis-1 lg:basis-1/3 pr-6">-->
 <!--          <svg xmlns="http://www.w3.org/2000/svg" class="bg-black shadow-lg w-auto h-auto text-white/5 rounded-3xl" fill="none" viewBox="0 0 24 24" stroke="currentColor">-->
@@ -71,7 +72,7 @@
           </div>
         </div>
         <div class="py-3 border-t border-slate-200/5"></div>
-        <textarea v-if="editingDescription" rows="16" v-model="newDescription" class="input"></textarea>
+        <textarea v-if="editingDescription" rows="8" v-model="newDescription" class="input"></textarea>
         <h2 v-if="editingDescription" class="section">Markdown Preview</h2>
         <MarkdownItVue v-if="editingDescription" :content="newDescription" class="px-4 py-4 md-body max-w-none prose-sm prose-blue bg-slate-800/50 rounded-md" />
         <MarkdownItVue v-if="!editingDescription && torrent.description" :content="torrent.description" class="md-body max-w-none prose-sm prose-blue" />
@@ -86,8 +87,16 @@
           <div v-for="(file, i) in groupedFiles" :key="i">- {{ file.name }} <span class="font-bold">({{ fileSize(file.length) }})</span></div>
         </div>
       </div>
-
     </div>
+    <h1 v-else-if="!loading" class="py-6 text-slate-600 italic">Torrent not found.</h1>
+    <div v-else class="flex flex-row text-slate-400 items-center" disabled>
+      <svg class="animate-spin h-5 w-5 mr-3 text-sky-500" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+      </svg>
+      Loading torrent information...
+    </div>
+  </div>
 </template>
 
 <script>
@@ -103,24 +112,11 @@ export default {
   name: "TorrentDetail",
   components: {Breadcrumb, XIcon, DownloadIcon, ChevronLeftIcon, MarkdownItVue},
   data: () => ({
+    loading: true,
     editingDescription: false,
     newDescription: '',
     prevRoute: null,
-    torrent: {
-      torrent_id: 0,
-      uploader: "",
-      info_hash: "",
-      title: "",
-      description: "",
-      category_id: 0,
-      upload_date: Date.now(),
-      file_size: 0,
-      seeders: 0,
-      leechers: 0,
-      files: [],
-      trackers: [],
-      magnet_link: "",
-    },
+    torrent: {},
   }),
   beforeRouteEnter(to, from, next) {
     next(vm => {
@@ -137,24 +133,24 @@ export default {
   },
   methods: {
     getTorrent(torrentId) {
-      const self = this;
+      this.loading = true;
       HttpService.get(`/torrent/${torrentId}`, (res) => {
         this.torrent = res.data.data;
+        this.loading = false;
       }).catch(() => {
-        self.closeModal();
+        this.loading = false;
       })
     },
     deleteTorrent() {
-      const self = this;
       HttpService.delete(`/torrent/${this.torrent.torrent_id}`, {}, () => {
         Vue.notify({
           title: 'Deleted',
           text: 'Torrent deleted successfully.',
           type: 'success',
         })
-        self.closeModal();
-      }).catch(() => {
-        self.closeModal();
+        this.torrent = {};
+      }).catch((e) => {
+        console.log(e);
       })
     },
     downloadTorrent() {
