@@ -128,7 +128,8 @@ label {
 }
 
 .input {
-  @apply py-2 px-4 bg-slate-800/50 appearance-none w-full text-slate-200 rounded-md leading-tight focus:outline-none;
+  @apply py-2 px-4 w-full text-white bg-slate-800 border border-slate-700 rounded-md text-sm shadow-sm cursor-pointer placeholder-slate-400 hover:border-sky-500 focus:bg-slate-800
+  focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500 transition duration-200;
 }
 
 .markdown-body {
