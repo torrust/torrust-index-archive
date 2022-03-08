@@ -3,7 +3,7 @@
 
     <div class="py-4">
       <router-link class="block text-2xl text-white" to="/">
-        <span class="font-semibold">{{ $store.state.settings.website.name }}</span>
+        <span class="font-semibold text-slate-400 hover:text-white transition duration-200">{{ $store.state.settings.website.name }}</span>
       </router-link>
     </div>
 
