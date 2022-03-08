@@ -4,4 +4,4 @@ CREATE TABLE torrust_categories (
 );
 
 INSERT INTO torrust_categories (name) VALUES
-('movie'), ('game'), ('music'), ('tv show'), ('app'), ('documentary'), ('other');
+('movies'), ('tv shows'), ('games'), ('music'), ('software');
