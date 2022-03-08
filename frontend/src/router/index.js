@@ -29,7 +29,7 @@ const routes = [
                 component: CategoryOverview
             },
             {
-                path: 'torrent/:torrentId',
+                path: 'torrent/:torrentId/:title?',
                 name: 'Torrent',
                 component: TorrentDetail
             },

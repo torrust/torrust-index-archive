@@ -137,9 +137,22 @@ export default {
       HttpService.get(`/torrent/${torrentId}`, (res) => {
         this.torrent = res.data.data;
         this.loading = false;
+        this.updateUrlWithTitle();
       }).catch(() => {
         this.loading = false;
       })
+    },
+    updateUrlWithTitle() {
+      if (this.$route.params.title !== this.torrent.title) {
+        // Retrieve current params
+        const currentParams = this.$router.currentRoute.params;
+        // Create new params object
+        const mergedParams = { ...currentParams, title: this.torrent.title };
+        // When router is not supplied path or name,
+        // it simply tries to update current route with new params or query
+        // Almost everything is optional.
+        this.$router.push({ params: mergedParams });
+      }
     },
     deleteTorrent() {
       HttpService.delete(`/torrent/${this.torrent.torrent_id}`, {}, () => {
