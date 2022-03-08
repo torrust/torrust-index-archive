@@ -10,16 +10,18 @@
           <h1 class="py-2 text-xl font-semibold text-white truncate">{{ torrent.title }}</h1>
           <h2 class="font-semibold text-sm text-slate-400 uppercase">{{ torrent.info_hash }}</h2>
 
-          <div class="mt-4 px-2 py-4 flex flex-col flex-col-reverse lg:flex-row border border-slate-800 rounded-md">
-            <div class="px-3 w-full lg:w-1/3 flex flex-col justify-start">
-              <div class="detail">Total size:<span class="value">{{ fileSize(torrent.file_size) }}</span></div>
-              <div class="detail">Upload Date:<span class="value">{{ new Date(torrent.upload_date * 1000).toLocaleString() }}</span></div>
-              <div class="detail border-none">Uploader:<span class="value">{{ torrent.uploader }}</span></div>
-            </div>
-            <div class="px-3 w-full lg:w-1/3 hidden lg:flex flex-col justify-start">
-              <div class="detail">Downloads:<span class="value italic">coming soon</span></div>
-              <div class="detail">Comments:<span class="value italic">coming soon</span></div>
-              <div class="detail border-none">Last Updated:<span class="value italic">coming soon</span></div>
+          <div class="py-4 flex flex-col flex-col-reverse lg:flex-row">
+            <div class="px-1 py-1 w-full lg:w-2/3 flex flex-col flex-col-reverse lg:flex-row border border-slate-800 rounded-md">
+              <div class="px-3 w-full lg:w-1/2 flex flex-col justify-start">
+                <div class="detail">Total size:<span class="value">{{ fileSize(torrent.file_size) }}</span></div>
+                <div class="detail">Upload Date:<span class="value">{{ new Date(torrent.upload_date * 1000).toLocaleString() }}</span></div>
+                <div class="detail border-none">Uploader:<span class="value">{{ torrent.uploader }}</span></div>
+              </div>
+              <div class="px-3 w-full lg:w-1/2 hidden lg:flex flex-col justify-start">
+                <div class="detail">Downloads:<span class="value italic">coming soon</span></div>
+                <div class="detail">Comments:<span class="value italic">coming soon</span></div>
+                <div class="detail border-none">Last Updated:<span class="value italic">coming soon</span></div>
+              </div>
             </div>
             <div class="px-3 w-full mb-2 lg:mb-0 lg:w-1/3 flex flex-col items-center">
               <div class="w-full flex flex-row items-center">
