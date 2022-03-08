@@ -1,6 +1,6 @@
 <template>
   <div class="mt-10 flex flex-col w-full">
-    <div class="max-w-5xl">
+    <div class="w-full">
       <form class="space-y-4">
         <div>
           <label for="title" class="block font-medium text-gray-700">
@@ -19,6 +19,11 @@
             <textarea id="description" name="description" rows="8" v-model="form.description"
                       class="input"></textarea>
           </div>
+        </div>
+
+        <div v-if="form.description">
+          <label>Markdown Preview</label>
+          <MarkdownItVue :content="form.description" class="mt-1 px-4 py-4 md-body max-w-none prose-sm prose-blue bg-slate-800/50 rounded-md" />
         </div>
 
         <div>
@@ -63,10 +68,12 @@ import {XIcon} from "@vue-hero-icons/solid";
 import FileUpload from "@/components/torrent-upload/FileUpload.vue";
 import CategorySelect from "@/components/torrent-upload/CategorySelect.vue";
 import HttpService from "@/common/http-service";
+import MarkdownItVue from "markdown-it-vue";
+import 'markdown-it-vue/dist/markdown-it-vue.css';
 
 export default {
   name: "TorrentDetail",
-  components: {CategorySelect, FileUpload, XIcon},
+  components: {CategorySelect, FileUpload, XIcon, MarkdownItVue},
   data: () => ({
     cover: null,
     torrent: null,
@@ -122,5 +129,33 @@ label {
 
 .input {
   @apply py-2 px-4 bg-slate-800/50 appearance-none w-full text-slate-200 rounded-md leading-tight focus:outline-none;
+}
+
+.markdown-body {
+  @apply text-slate-400;
+}
+
+.markdown-body a {
+  @apply text-sky-400;
+}
+
+.markdown-body blockquote {
+  @apply text-slate-400 border-slate-600;
+}
+
+.markdown-body hr {
+  @apply bg-slate-200/50;
+}
+
+.markdown-body h1, .markdown-body h2, .markdown-body h3, .markdown-body h4, .markdown-body h5, .markdown-body h6 {
+  @apply border-slate-200/50;
+}
+
+.markdown-body .highlight pre, .markdown-body pre {
+  @apply bg-slate-800 text-slate-400 rounded-md;
+}
+
+.markdown-body table tr, .markdown-body table td, .markdown-body table th {
+  @apply bg-slate-800 border-slate-700;
 }
 </style>
