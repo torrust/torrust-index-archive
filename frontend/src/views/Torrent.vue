@@ -11,7 +11,7 @@
           <h2 class="font-semibold text-xs lg:text-sm text-slate-400 uppercase">{{ torrent.info_hash }}</h2>
 
           <div class="py-4 flex flex-col flex-col-reverse lg:flex-row">
-            <div class="px-1 py-1 w-full lg:w-2/3 flex flex-col lg:flex-row flex-row border border-slate-800 rounded-md">
+            <div class="px-1 py-1 w-full lg:w-2/3 flex flex-col lg:flex-row flex-row bg-slate-800/50 rounded-md shadow-md">
               <div class="px-3 w-full lg:w-1/2 flex flex-col justify-start">
                 <div class="detail">Total size:<span class="value">{{ fileSize(torrent.file_size) }}</span></div>
                 <div class="detail">Upload Date:<span class="value">{{ new Date(torrent.upload_date * 1000).toLocaleString() }}</span></div>
@@ -216,11 +216,11 @@ export default {
 
 <style>
 .status {
-  @apply px-2 py-1.5 w-1/2 flex flex-row bg-slate-800 text-slate-400 capitalize border border-slate-800 rounded-md text-sm uppercase;
+  @apply px-2 py-1.5 w-1/2 flex flex-row bg-slate-800/50 text-slate-200 capitalize border border-transparent rounded-md text-sm uppercase;
 }
 
 .detail {
-  @apply py-2 flex flex-row font-semibold text-sm text-slate-200 border-b border-slate-800;
+  @apply py-2 flex flex-row text-sm text-slate-200 border-b border-slate-700;
 }
 
 .detail > .value {
