@@ -1,8 +1,8 @@
 <template>
   <div class="mt-10">
-    <div v-if="search" class="flex flex-row">
-      <h2 class="text-gray-400">Search results for '{{ this.search }}'</h2>
-      <button @click="clearSearch" class="px-2 ml-2 text-sm rounded-xl bg-red-500 bg-opacity-10 text-red-400 hover:text-red-500">Clear search</button>
+    <div v-if="search" class="mb-2 flex flex-row">
+      <h2 class="text-slate-400">Search results for '{{ this.search }}'</h2>
+      <button @click="clearSearch" class="px-2 py-1 ml-2 text-sm rounded-md bg-red-500 bg-opacity-10 text-red-400 hover:text-red-500 transition duration-200">Clear search</button>
     </div>
     <div class="flex flex-row">
       <FilterCategory />
