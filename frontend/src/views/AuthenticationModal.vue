@@ -19,8 +19,8 @@
             leave-class="opacity-100 scale-100"
             leave-to-class="opacity-0 scale-95"
         >
-          <h2 v-if="isSignUp" class="text-2xl mb-4 font-semibold text-center text-slate-200">Sign Up</h2>
-          <h2 v-else class="text-2xl mb-4 font-semibold text-center text-slate-200">Sign In</h2>
+          <h2 v-if="isSignUp" class="text-xl mb-4 font-semibold text-center text-slate-400 uppercase">Create account</h2>
+          <h2 v-else class="text-xl mb-4 font-semibold text-center text-slate-400 uppercase">Login</h2>
         </transition>
 
         <form
@@ -113,10 +113,10 @@
         </form>
         <div class="relative mt-6">
           <div class="flex relative justify-center text-sm">
-            <button v-if="isSignUp" class="px-2 text-slate-400 hover:text-slate-200" @click="toggleMode">
+            <button v-if="isSignUp" class="px-2 font-semibold text-slate-400 hover:text-slate-200 transition duration-200" @click="toggleMode">
               Already have an account? Sign in
             </button>
-            <button v-else class="px-2 text-slate-400 hover:text-slate-200" @click="toggleMode">
+            <button v-else class="px-2 font-semibold text-slate-400 hover:text-slate-200 transition duration-200" @click="toggleMode">
               Don't have an account? Sign up
             </button>
           </div>
@@ -172,9 +172,8 @@ label {
   @apply text-left text-xs font-medium uppercase tracking-wider text-slate-400 hover:text-slate-200;
 }
 
-.form-style, input:-webkit-autofill,
-input:-webkit-autofill:focus {
-  @apply mt-1 block w-full px-3 py-2 text-white bg-slate-800 border border-slate-700 rounded-md text-sm shadow-sm placeholder-slate-400
-  focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500;
+.form-style {
+  @apply mt-1 w-full px-3 py-2 text-white bg-slate-800 border border-slate-700 rounded-md text-sm shadow-sm cursor-pointer placeholder-slate-400 hover:border-sky-500 focus:bg-slate-800
+  focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500 transition duration-200;
 }
 </style>
