@@ -7,7 +7,7 @@
 <!--          </svg>-->
 <!--        </div>-->
         <div class="w-full overflow-hidden">
-          <h1 class="py-2 text-xl font-semibold text-white truncate">{{ torrent.title }}</h1>
+          <h1 class="py-2 text-xl font-semibold text-slate-200 truncate">{{ torrent.title }}</h1>
           <h2 class="font-semibold text-xs lg:text-sm text-slate-400 uppercase">{{ torrent.info_hash }}</h2>
 
           <div class="py-4 flex flex-col flex-col-reverse lg:flex-row">
@@ -44,7 +44,7 @@
           </div>
 
           <div v-if="isAdmin">
-            <h2 class="py-3 text-white">Admin Tools</h2>
+            <h2 class="section">Admin Tools</h2>
             <div class="py-3 border-t border-slate-200/5"></div>
             <div class="flex flex-row items-center">
               <button type="button" @click="deleteTorrent"
@@ -62,7 +62,7 @@
 
       <div>
         <div v-if="isAdmin" class="py-3 border-b border-slate-200/5"></div>
-        <h2 class="py-3 text-white">Torrent Description</h2>
+        <h2 class="section">Torrent Description</h2>
         <div class="py-3 border-t border-slate-200/5"></div>
         <!--        <button v-if="isAdmin || isOwner" type="button"-->
         <!--                class="mb-2 text-white bg-blue-600 border-transparent shadow-sm button hover:bg-blue-500">-->
@@ -77,7 +77,7 @@
 
       <div>
         <div class="py-3 border-b border-slate-200/5"></div>
-        <h2 class="py-3 text-white">Torrent Files</h2>
+        <h2 class="section">Torrent Files</h2>
         <div class="py-3 border-t border-slate-200/5"></div>
         <div class="text-sm flex flex-col w-full text-slate-400 overflow-auto">
           <div v-for="(file, i) in groupedFiles" :key="i">- {{ file.name }} <span class="font-bold">({{ fileSize(file.length) }})</span></div>
@@ -225,6 +225,10 @@ export default {
 
 .detail > .value {
   @apply ml-auto text-slate-400;
+}
+
+h2.section {
+  @apply py-3 font-semibold text-xl text-slate-400;
 }
 
 .markdown-body {
