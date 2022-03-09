@@ -35,7 +35,7 @@ async fn main() -> std::io::Result<()> {
     );
 
     // create/update database tables
-    sqlx::migrate!().run(&database.pool).await.unwrap();
+    let _ = sqlx::migrate!().run(&database.pool).await;
 
     // create torrent upload folder
     async_std::fs::create_dir_all(&settings.storage.upload_path).await?;

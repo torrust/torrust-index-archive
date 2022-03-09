@@ -13,17 +13,17 @@ Torrust is a suite of client-server software for hosting online torrent indexes.
 * [X] Torrent sharing
 * [X] Torrent searching & filtering
 * [X] Private tracker compatible
-* [X] Content & user moderation tools (*__partly implemented__*)
-* [X] Website customization (*__partly implemented__*)
+* [X] Content & user moderation tools
+* [X] Website customization
 
 ### Installation
 Read the [installation documentation](https://torrust.github.io/torrust-documentation/installation/) for setting up the torrent index backend/frontend + [Torrust tracker](https://github.com/torrust/torrust-tracker).
 
 ### Screenshots
 ![Web UI Sign Up page](img/signup.png)
-![Web UI Popular page](img/popular.png)
-![Web UI Torrent page](img/torrent.png)
 ![Web UI Upload page](img/upload.png)
+![Web UI Popular page](img/torrents.png)
+![Web UI Torrent page](img/torrent.png)
 ![Web UI Settings page](img/settings.png)
 
 ### Need
@@ -50,4 +50,7 @@ Anyone will be able to host a (private) BitTorrent tracker and online torrent in
 *Coming soon.*
 
 ### Credits
-This project was a joint effort by [Nautilus Cyberneering GmbH](https://nautilus-cyberneering.de/) and [Dutch Bits](https://dutchbits.nl).
+This project was developed by [Dutch Bits](https://dutchbits.nl) for [Nautilus Cyberneering GmbH](https://nautilus-cyberneering.de/).
+
+### Contact
+Message `Warm Beer#3352` on Discord or email `mick@dutchbits.nl`.
