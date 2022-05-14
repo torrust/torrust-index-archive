@@ -126,17 +126,20 @@ export default {
   },
   mounted() {
     document.body.classList.add("modal-open");
-    this.getTorrent(this.$route.params.torrentId);
+    this.getTorrent(this.$route.params.torrentId, this.$route.params.download === "download" || this.$route.params.title === "download");
   },
   beforeDestroy() {
     document.body.classList.remove("modal-open");
   },
   methods: {
-    getTorrent(torrentId) {
+    getTorrent(torrentId, download) {
       this.loading = true;
       HttpService.get(`/torrent/${torrentId}`, (res) => {
         this.torrent = res.data.data;
         this.loading = false;
+        if(download){
+          this.downloadTorrent();
+        }
         this.updateUrlWithTitle();
       }).catch(() => {
         this.loading = false;
