@@ -83,6 +83,7 @@ export default {
   watch: {
     '$route.query.search': function (search) {
       search ? this.search = search : this.search = '';
+      this.currentPage = 1;
       this.loadTorrents(this.currentPage, this.sorting);
     },
     '$route.params.sorting': function () {
