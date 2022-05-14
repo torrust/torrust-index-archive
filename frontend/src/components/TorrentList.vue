@@ -30,15 +30,7 @@
               >
                 <td>
                   <div class="flex flex-row items-center">
-<!--                    <svg v-if="torrent.category_id === 2" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">-->
-<!--                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z" />-->
-<!--                    </svg>-->
-<!--                    <svg v-if="torrent.category_id === 3" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">-->
-<!--                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />-->
-<!--                    </svg>-->
-<!--                    <svg v-if="torrent.category_id === 1" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">-->
-<!--                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />-->
-<!--                    </svg>-->
+                    <img class="h-8 w-8 mr-3 p-1.5 bg-slate-800 text-white rounded-md" :src="indexedCategories[torrent.category_id] && indexedCategories[torrent.category_id].icon ? `/icons/${indexedCategories[torrent.category_id].icon}` : '/icons/computer.svg'">
                     <span>{{ torrent.title }}</span>
                   </div>
                 </td>
@@ -68,6 +60,7 @@
 
 <script>
 import { SortAscendingIcon, SortDescendingIcon } from "@vue-hero-icons/outline"
+import {mapState} from "vuex";
 
 export default {
   name: "TorrentList",
@@ -90,6 +83,16 @@ export default {
       'size',
     ]
   }),
+  computed: {
+    ...mapState(['categories']),
+    indexedCategories() {
+      let obj = {};
+      for (let category of this.categories) {
+        obj[category.category_id] = category;
+      }
+      return obj;
+    }
+  },
   methods: {
     changeSort(sort) {
       let direction = 'ASC';

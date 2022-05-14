@@ -5,7 +5,7 @@ use crate::errors::ServiceError;
 use crate::models::torrent::TorrentListing;
 use crate::utils::time::current_time;
 use crate::models::tracker_key::TrackerKey;
-use serde::Serialize;
+use serde::{Serialize, Deserialize};
 
 #[derive(Debug, Serialize)]
 pub struct TorrentCompact {
@@ -17,8 +17,11 @@ pub struct Database {
     pub pool: SqlitePool
 }
 
+#[derive(Debug, Serialize, Deserialize, sqlx::FromRow)]
 pub struct Category {
-    pub name: String
+    pub name: String,
+    pub icon: Option<String>,
+    pub num_torrents: i64
 }
 
 impl Database {
@@ -182,17 +185,32 @@ impl Database {
         }
     }
 
-    pub async fn verify_category(&self, category: &str) -> Option<String> {
+    pub async fn get_category(&self, id: i64) -> Option<Category> {
         let res = sqlx::query_as!(
             Category,
-            "SELECT name FROM torrust_categories WHERE name = ?",
+            "SELECT name, icon, (SELECT COUNT(*) FROM torrust_torrents WHERE torrust_torrents.category_id = torrust_categories.category_id) AS num_torrents FROM torrust_categories WHERE category_id = ?",
+            id
+        )
+            .fetch_one(&self.pool)
+            .await;
+
+        match res {
+            Ok(v) => Some(v),
+            Err(_) => None
+        }
+    }
+
+    pub async fn get_category_by_name(&self, category: &str) -> Option<Category> {
+        let res = sqlx::query_as!(
+            Category,
+            "SELECT name, icon, (SELECT COUNT(*) FROM torrust_torrents WHERE torrust_torrents.category_id = torrust_categories.category_id) AS num_torrents FROM torrust_categories WHERE name = ?",
             category
         )
             .fetch_one(&self.pool)
             .await;
 
         match res {
-            Ok(v) => Some(v.name),
+            Ok(v) => Some(v),
             Err(_) => None
         }
     }

@@ -101,8 +101,8 @@ pub async fn get_torrents(params: Query<DisplayInfo>, app_data: WebAppData) -> S
         let mut category_filters = String::new();
         for category in c.iter() {
             // don't take user input in the db query
-            if let Some(sanitized_category) = &app_data.database.verify_category(category).await {
-                let mut str = format!("tc.name = '{}'", sanitized_category);
+            if let Some(sanitized_category) = &app_data.database.get_category_by_name(category).await {
+                let mut str = format!("tc.name = '{}'", sanitized_category.name);
                 if i > 0 { str = format!(" OR {}", str); }
                 category_filters.push_str(&str);
                 i += 1;
@@ -152,7 +152,9 @@ pub async fn get_torrent(req: HttpRequest, app_data: WebAppData) -> ServiceResul
     let torrent_id = get_torrent_id_from_request(&req)?;
 
     let torrent_listing = app_data.database.get_torrent_by_id(torrent_id).await?;
+    let category = app_data.database.get_category(torrent_listing.category_id).await.unwrap();
     let mut torrent_response = TorrentResponse::from_listing(torrent_listing);
+    torrent_response.category = category;
 
     let filepath = format!("{}/{}", settings.storage.upload_path, torrent_response.torrent_id.to_string() + ".torrent");
 
