@@ -30,7 +30,7 @@
               >
                 <td>
                   <div class="flex flex-row items-center">
-                    <img class="h-8 w-8 mr-3 p-1.5 bg-slate-800 text-white rounded-md" :src="indexedCategories[torrent.category_id] && indexedCategories[torrent.category_id].icon ? `/icons/${indexedCategories[torrent.category_id].icon}` : '/icons/computer.svg'">
+<!--                    <img class="h-8 w-8 mr-3 p-1.5 bg-slate-800 text-white rounded-md" :src="indexedCategories[torrent.category_id] && indexedCategories[torrent.category_id].icon ? `/icons/${indexedCategories[torrent.category_id].icon}` : '/icons/computer.svg'">-->
                     <span>{{ torrent.title }}</span>
                   </div>
                 </td>
