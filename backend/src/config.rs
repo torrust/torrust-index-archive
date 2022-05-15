@@ -24,7 +24,15 @@ pub struct Network {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+pub enum EmailOnSignup {
+    Required,
+    Optional,
+    None
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Auth {
+    pub email_on_signup: EmailOnSignup,
     pub min_password_length: usize,
     pub max_password_length: usize,
     pub secret_key: String,
@@ -92,6 +100,7 @@ impl Configuration {
                 base_url: None
             },
             auth: Auth {
+                email_on_signup: EmailOnSignup::Optional,
                 min_password_length: 6,
                 max_password_length: 64,
                 secret_key: "MaxVerstappenWC2021".to_string()
@@ -165,4 +174,23 @@ impl Configuration {
 
         Ok(())
     }
+}
+
+impl Configuration {
+    pub async fn get_public(&self) -> ConfigurationPublic {
+        let settings_lock = self.settings.read().await;
+
+        ConfigurationPublic {
+            website_name: settings_lock.website.name.clone(),
+            tracker_url: settings_lock.tracker.url.clone(),
+            email_on_signup: settings_lock.auth.email_on_signup.clone()
+        }
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ConfigurationPublic {
+    website_name: String,
+    tracker_url: String,
+    email_on_signup: EmailOnSignup
 }

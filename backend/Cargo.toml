@@ -33,6 +33,7 @@ urlencoding = "2.1.0"
 
 pbkdf2 = "0.9"
 rand_core = { version = "0.6", features = ["std"] }
+rand = "0.8.5"
 
 sanitize-filename = "0.3.0"
 

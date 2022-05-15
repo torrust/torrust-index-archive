@@ -11,9 +11,11 @@ use std::borrow::Cow;
 use crate::errors::{ServiceResult, ServiceError};
 use crate::common::WebAppData;
 use jsonwebtoken::{DecodingKey, decode, Validation, Algorithm};
+use crate::config::EmailOnSignup;
 use crate::models::response::OkResponse;
 use crate::models::response::TokenResponse;
 use crate::mailer::VerifyClaims;
+use crate::utils::random::random_string;
 
 pub fn init_routes(cfg: &mut web::ServiceConfig) {
     cfg.service(
@@ -32,7 +34,7 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Register {
     pub username: String,
-    pub email: String,
+    pub email: Option<String>,
     pub password: String,
     pub confirm_password: String,
 }
@@ -43,8 +45,18 @@ pub struct Login {
     pub password: String,
 }
 
-pub async fn register(req: HttpRequest, payload: web::Json<Register>, app_data: WebAppData) -> ServiceResult<impl Responder> {
+pub async fn register(req: HttpRequest, mut payload: web::Json<Register>, app_data: WebAppData) -> ServiceResult<impl Responder> {
     let settings = app_data.cfg.settings.read().await;
+
+    match settings.auth.email_on_signup {
+        EmailOnSignup::Required => {
+            if payload.email.is_none() { return Err(ServiceError::EmailMissing) }
+        }
+        EmailOnSignup::None => {
+            payload.email = None
+        }
+        _ => {}
+    }
 
     if payload.password != payload.confirm_password {
         return Err(ServiceError::PasswordsDontMatch);
@@ -70,10 +82,13 @@ pub async fn register(req: HttpRequest, payload: web::Json<Register>, app_data: 
         return Err(ServiceError::UsernameInvalid)
     }
 
+    // can't drop not null constraint on sqlite, so we fill the email with unique junk :)
+    let email = payload.email.as_ref().unwrap_or(&format!("EMPTY_EMAIL_{}", random_string(16))).to_string();
+
     let res = sqlx::query!(
         "INSERT INTO torrust_users (username, email, password) VALUES ($1, $2, $3)",
         payload.username,
-        payload.email,
+        email,
         password_hash,
     )
         .execute(&app_data.database.pool)
@@ -107,9 +122,9 @@ pub async fn register(req: HttpRequest, payload: web::Json<Register>, app_data: 
 
     let conn_info = req.connection_info();
 
-    if settings.mail.email_verification_enabled {
+    if settings.mail.email_verification_enabled && payload.email.is_some() {
         let mail_res = app_data.mailer.send_verification_mail(
-            &payload.email,
+            &payload.email.as_ref().unwrap(),
             &payload.username,
             format!("{}://{}", conn_info.scheme(), conn_info.host()).as_str()
         )

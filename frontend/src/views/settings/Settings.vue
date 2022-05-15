@@ -78,6 +78,9 @@
 
         <!-- Authentication -->
         <h3>Authentication</h3>
+        <label>Email on Signup</label>
+        <SelectComponent class="py-1" :options="EmailOnSignup" :selected="settings.auth.email_on_signup" @update="(val) => {settings.auth.email_on_signup = val}"/>
+
         <label>Min. Password Length</label>
         <div class="setting-input-container">
           <input type='number' v-model="settings.auth.min_password_length">
@@ -161,10 +164,13 @@
 
 import {mapState} from "vuex";
 import HttpService from "@/common/http-service";
+import SelectComponent from "@/components/SelectComponent.vue";
 
 export default {
   name: "Settings",
+  components: { SelectComponent },
   data: () => ({
+    EmailOnSignup: [{ name: "Required" }, { name: "Optional" }, { name: "None" }],
     tab: 'general',
     newCategory: '',
     savingSettings: false,
@@ -183,6 +189,7 @@ export default {
         base_url: null
       },
       auth: {
+        email_on_signup: "Optional",
         min_password_length: 0,
         max_password_length: 0,
         secret_key: ""

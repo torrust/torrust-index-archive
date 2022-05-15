@@ -16,10 +16,12 @@ export default {
   name: 'App',
   components: {Toast, Navbar},
   beforeMount() {
-    this.$store.dispatch('getSiteName')
+    this.$store.dispatch('getPublicSettings');
+    this.$store.dispatch('getSiteName');
   },
   watch:{
     $route (to, from){
+      this.$store.dispatch('getPublicSettings');
       this.$store.dispatch('getCategories');
       this.$store.dispatch('getSiteName');
     }

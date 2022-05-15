@@ -55,13 +55,18 @@ export default {
         }
     },
     actions: {
-        login({dispatch, commit}, data) {
-            HttpService.post('/user/login', data, (res) => {
+        async login({dispatch, state, commit, getters}, data) {
+            await HttpService.post('/user/login', data, async (res) => {
                 const data = res.data.data;
 
-                commit('authSuccess', data);
-                dispatch('closeAuthModal');
+                await commit('authSuccess', data);
             });
+
+            if (getters.isAdministrator) {
+                dispatch('getSettings');
+            }
+
+            dispatch('closeAuthModal');
         },
         register(store, data) {
             return new Promise((resolve) => HttpService.post('/user/register', data, () => {

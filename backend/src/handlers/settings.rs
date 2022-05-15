@@ -14,6 +14,9 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
             .service(web::resource("/name")
                 .route(web::get().to(get_site_name))
             )
+            .service(web::resource("/public")
+                .route(web::get().to(get_public_settings))
+            )
     );
 }
 
@@ -28,6 +31,14 @@ pub async fn get_settings(req: HttpRequest, app_data: WebAppData) -> ServiceResu
 
     Ok(HttpResponse::Ok().json(OkResponse {
         data: &*settings
+    }))
+}
+
+pub async fn get_public_settings(app_data: WebAppData) -> ServiceResult<impl Responder> {
+    let public_settings = app_data.cfg.get_public().await;
+
+    Ok(HttpResponse::Ok().json(OkResponse {
+        data: public_settings
     }))
 }
 

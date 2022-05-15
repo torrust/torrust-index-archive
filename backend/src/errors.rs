@@ -18,8 +18,11 @@ pub enum ServiceError {
     )]
     ClosedForRegistration,
 
+    #[display(fmt = "Email is required")] //405j
+    EmailMissing,
     #[display(fmt = "The value you entered for email is not an email")] //405j
     NotAnEmail,
+
     #[display(fmt = "The value you entered for URL is not a URL")] //405j
     NotAUrl,
 
