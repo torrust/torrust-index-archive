@@ -49,6 +49,9 @@
           <input type='text' v-model="settings.tracker.url">
         </div>
 
+        <label>Mode</label>
+        <SelectComponent class="py-1" :options="TrackerMode" :selected="settings.tracker.mode" @update="(val) => {settings.tracker.mode = val}"/>
+
         <label>API URL</label>
         <div class="setting-input-container">
           <input type='text' v-model="settings.tracker.api_url">
@@ -170,6 +173,7 @@ export default {
   name: "Settings",
   components: { SelectComponent },
   data: () => ({
+    TrackerMode: [{ name: "Public" }, { name: "Private" }, { name: "Whitelisted" }, { name: "PrivateWhitelisted" }],
     EmailOnSignup: [{ name: "Required" }, { name: "Optional" }, { name: "None" }],
     tab: 'general',
     newCategory: '',
@@ -180,6 +184,7 @@ export default {
       },
       tracker: {
         url: "",
+        mode: "",
         api_url: "",
         token: "",
         token_valid_seconds: 0

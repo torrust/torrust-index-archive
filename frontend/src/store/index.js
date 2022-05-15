@@ -16,6 +16,7 @@ export default new Vuex.Store({
             },
             tracker: {
                 url: "",
+                mode: "",
                 api_url: "",
                 token: "",
                 token_valid_seconds: 0
@@ -49,6 +50,7 @@ export default new Vuex.Store({
         publicSettings: {
             website_name: "",
             tracker_url: "",
+            tracker_mode: "",
             email_on_signup: ""
         }
     },

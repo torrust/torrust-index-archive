@@ -10,8 +10,17 @@ pub struct Website {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+pub enum TrackerMode {
+    Public,
+    Private,
+    Whitelisted,
+    PrivateWhitelisted
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Tracker {
     pub url: String,
+    pub mode: TrackerMode,
     pub api_url: String,
     pub token: String,
     pub token_valid_seconds: u64,
@@ -73,13 +82,6 @@ pub struct TorrustConfig {
 
 #[derive(Debug)]
 pub struct Configuration {
-    // pub website: Website,
-    // pub tracker: Tracker,
-    // pub net: Network,
-    // pub auth: Auth,
-    // pub database: Database,
-    // pub storage: Storage,
-    // pub mail: Mail,
     pub settings: RwLock<TorrustConfig>
 }
 
@@ -91,6 +93,7 @@ impl Configuration {
             },
             tracker: Tracker {
                 url: "udp://localhost:6969".to_string(),
+                mode: TrackerMode::Public,
                 api_url: "http://localhost:1212".to_string(),
                 token: "MyAccessToken".to_string(),
                 token_valid_seconds: 7257600
@@ -183,6 +186,7 @@ impl Configuration {
         ConfigurationPublic {
             website_name: settings_lock.website.name.clone(),
             tracker_url: settings_lock.tracker.url.clone(),
+            tracker_mode: settings_lock.tracker.mode.clone(),
             email_on_signup: settings_lock.auth.email_on_signup.clone()
         }
     }
@@ -192,5 +196,6 @@ impl Configuration {
 pub struct ConfigurationPublic {
     website_name: String,
     tracker_url: String,
+    tracker_mode: TrackerMode,
     email_on_signup: EmailOnSignup
 }
