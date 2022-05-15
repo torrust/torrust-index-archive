@@ -259,6 +259,9 @@ pub async fn delete_torrent(req: HttpRequest, app_data: WebAppData) -> ServiceRe
 
     let torrent_id = get_torrent_id_from_request(&req)?;
 
+    // needed later for removing torrent from tracker whitelist
+    let torrent_listing = app_data.database.get_torrent_by_id(torrent_id).await?;
+
     let res = sqlx::query!(
         "DELETE FROM torrust_torrents WHERE torrent_id = ?",
         torrent_id
@@ -268,6 +271,9 @@ pub async fn delete_torrent(req: HttpRequest, app_data: WebAppData) -> ServiceRe
 
     if let Err(_) = res { return Err(ServiceError::TorrentNotFound) }
     if res.unwrap().rows_affected() == 0 { return Err(ServiceError::TorrentNotFound) }
+
+    // remove info_hash from tracker whitelist
+    let _ = app_data.tracker.remove_info_hash_from_whitelist(torrent_listing.info_hash).await;
 
     Ok(HttpResponse::Ok().json(OkResponse {
         data: NewTorrentResponse {

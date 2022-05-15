@@ -67,6 +67,28 @@ impl TrackerService {
         Err(ServiceError::InternalServerError)
     }
 
+    pub async fn remove_info_hash_from_whitelist(&self, info_hash: String) -> Result<(), ServiceError> {
+        let settings = self.cfg.settings.read().await;
+
+        let request_url =
+            format!("{}/api/whitelist/{}?token={}", settings.tracker.api_url, info_hash, settings.tracker.token);
+
+        drop(settings);
+
+        let client = reqwest::Client::new();
+
+        let response = match client.delete(request_url).send().await {
+            Ok(v) => Ok(v),
+            Err(_) => Err(ServiceError::InternalServerError)
+        }?;
+
+        if response.status().is_success() {
+            return Ok(())
+        }
+
+        Err(ServiceError::InternalServerError)
+    }
+
     pub async fn get_personal_announce_url(&self, user: &User) -> Result<String, ServiceError> {
         let settings = self.cfg.settings.read().await;
 
