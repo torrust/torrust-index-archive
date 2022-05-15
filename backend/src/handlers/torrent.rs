@@ -217,7 +217,8 @@ pub async fn get_torrent(req: HttpRequest, app_data: WebAppData) -> ServiceResul
 
 #[derive(Debug, Deserialize)]
 pub struct TorrentUpdate {
-    description: String
+    title: Option<String>,
+    description: Option<String>
 }
 
 pub async fn update_torrent(req: HttpRequest, payload: web::Json<TorrentUpdate>, app_data: WebAppData) -> ServiceResult<impl Responder> {
@@ -230,21 +231,36 @@ pub async fn update_torrent(req: HttpRequest, payload: web::Json<TorrentUpdate>,
     // check if user is owner or administrator
     if torrent_listing.uploader != user.username && !user.administrator { return Err(ServiceError::Unauthorized) }
 
-    // update torrent
-    let res = sqlx::query!(
-        "UPDATE torrust_torrents SET description = $1 WHERE torrent_id = $2",
-        payload.description,
-        torrent_id
-    )
-        .execute(&app_data.database.pool)
-        .await;
+    // update torrent title
+    if let Some(title) = &payload.title {
+        let res = sqlx::query!(
+            "UPDATE torrust_torrents SET title = $1 WHERE torrent_id = $2",
+            title,
+            torrent_id
+        )
+            .execute(&app_data.database.pool)
+            .await;
 
-    if let Err(_) = res { return Err(ServiceError::TorrentNotFound) }
+        if let Err(_) = res { return Err(ServiceError::TorrentNotFound) }
+        if res.unwrap().rows_affected() == 0 { return Err(ServiceError::TorrentNotFound) }
+    }
 
-    if res.unwrap().rows_affected() == 0 { return Err(ServiceError::TorrentNotFound) }
+    // update torrent description
+    if let Some(description) = &payload.description {
+        let res = sqlx::query!(
+            "UPDATE torrust_torrents SET description = $1 WHERE torrent_id = $2",
+            description,
+            torrent_id
+        )
+            .execute(&app_data.database.pool)
+            .await;
 
-    let mut torrent_response = TorrentResponse::from_listing(torrent_listing);
-    torrent_response.description = Some(payload.description.clone());
+        if let Err(_) = res { return Err(ServiceError::TorrentNotFound) }
+        if res.unwrap().rows_affected() == 0 { return Err(ServiceError::TorrentNotFound) }
+    }
+
+    let torrent_listing = app_data.database.get_torrent_by_id(torrent_id).await?;
+    let torrent_response = TorrentResponse::from_listing(torrent_listing);
 
     Ok(HttpResponse::Ok().json(OkResponse {
         data: torrent_response

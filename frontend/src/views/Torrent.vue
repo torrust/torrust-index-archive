@@ -8,7 +8,15 @@
 <!--          </svg>-->
 <!--        </div>-->
         <div class="w-full overflow-hidden">
-          <h1 class="py-2 text-xl font-semibold text-slate-200 truncate">{{ torrent.title }}</h1>
+          <div class="flex flex-row items-center">
+            <input v-if="editingTitle" v-model="newTitle" class="mr-2" type="text">
+            <h1 v-else class="py-2 text-xl font-semibold text-slate-200 truncate">{{ torrent.title }}</h1>
+            <button v-if="torrent.uploader === user.username && !editingTitle" @click="editTitle" class="ml-auto edit">Edit</button>
+            <div v-if="torrent.uploader === user.username && editingTitle" class="ml-auto flex flex-row space-x-2">
+              <button @click="() => (editingTitle = false)" class="ml-auto edit">Cancel</button>
+              <button :disabled="newTitle === torrent.title" @click="saveTitle" class="ml-auto edit">Save</button>
+            </div>
+          </div>
           <h2 class="font-semibold text-xs lg:text-sm text-slate-400 uppercase">{{ torrent.info_hash }}</h2>
 
           <div class="py-4 flex flex-col flex-col-reverse lg:flex-row">
@@ -125,8 +133,10 @@ export default {
   components: {Breadcrumb, XIcon, DownloadIcon, ChevronLeftIcon, MarkdownItVue},
   data: () => ({
     loading: true,
+    editingTitle: false,
+    newTitle: "",
     editingDescription: false,
-    newDescription: '',
+    newDescription: "",
     prevRoute: null,
     torrent: {},
   }),
@@ -203,6 +213,21 @@ export default {
       }).catch(() => {
         self.closeModal();
       })
+    },
+    editTitle() {
+      this.newTitle = this.torrent.title;
+      this.editingTitle = true;
+    },
+    saveTitle() {
+      HttpService.put(`/torrent/${this.torrent.torrent_id}`, { title: this.newTitle }, (res) => {
+        this.editingTitle = false;
+        Vue.notify({
+          title: 'Updated',
+          text: 'Torrent updated successfully.',
+          type: 'success',
+        })
+        this.torrent.title = res.data.data.title;
+      }).catch(() => {})
     },
     editDescription() {
       this.newDescription = this.torrent.description;
@@ -282,7 +307,7 @@ button.edit {
   @apply px-4 py-1.5 rounded-md border border-slate-800 text-sm text-slate-400 flex items-center relative cursor-pointer transition duration-200 hover:text-slate-200 hover:border-slate-200 disabled:bg-slate-700 disabled:border-slate-700 disabled:text-slate-400;
 }
 
-textarea.input {
+textarea.input, input {
   @apply py-2 px-4 bg-slate-800/50 appearance-none w-full text-slate-200 rounded-md leading-tight focus:outline-none;
 }
 
