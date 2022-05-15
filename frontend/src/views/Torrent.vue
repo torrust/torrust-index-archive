@@ -29,18 +29,30 @@
                 <div class="status">Seeders: <span class="ml-auto text-green-500">{{ torrent.seeders }}</span></div>
                 <div class="ml-2 status">Leechers: <span class="ml-auto text-red-500">{{ torrent.leechers }}</span></div>
               </div>
-              <button type="button" @click="downloadTorrent"
+              <button v-if="showDownloadButtons" type="button" @click="downloadTorrent"
                       class="mt-2 px-3 py-1.5 w-full flex flex-row justify-center text-sm text-white text-center bg-green-600 border border-green-600 rounded-md transition duration-200 hover:shadow-lg hover:shadow-green-600/25">
                 <DownloadIcon class="justify-self-start mr-2 w-5 h-5"/>
                 <span>Torrent Download</span>
               </button>
-              <a type="button" :href="torrent.magnet_link"
+              <button v-else type="button" @click="$store.dispatch('openAuthModal')"
+                      class="mt-2 px-3 py-1.5 w-full flex flex-row justify-center text-sm text-white text-center bg-sky-500 border border-sky-500 rounded-md transition duration-200">
+                <DownloadIcon class="justify-self-start mr-2 w-5 h-5"/>
+                <span>Sign in to download</span>
+              </button>
+              <a v-if="showDownloadButtons" type="button" :href="torrent.magnet_link"
                  class="mt-2 px-3 py-1.5 w-full flex flex-row justify-center text-sm text-white text-center bg-red-600 border border-red-600 rounded-md transition duration-200 hover:shadow-lg hover:shadow-red-600/25">
                 <svg xmlns="http://www.w3.org/2000/svg" class="mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 <span>Magnet Download</span>
               </a>
+              <button v-else type="button" @click="$store.dispatch('openAuthModal')"
+                      class="mt-2 px-3 py-1.5 w-full flex flex-row justify-center text-sm text-white text-center bg-sky-500 border border-sky-500 rounded-md transition duration-200">
+                <svg xmlns="http://www.w3.org/2000/svg" class="mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span>Sign in to download</span>
+              </button>
             </div>
           </div>
 
@@ -242,6 +254,9 @@ export default {
 
       return files;
     },
+    showDownloadButtons() {
+      return this.$store.getters.isLoggedIn || this.$store.state.publicSettings.tracker_mode === "Public" || this.$store.state.publicSettings.tracker_mode === "Whitelisted"
+    }
   }
 }
 </script>
