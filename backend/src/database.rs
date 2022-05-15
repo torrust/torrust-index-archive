@@ -51,21 +51,6 @@ impl Database {
         }
     }
 
-    pub async fn get_user_with_email(&self, email: &str) -> Option<User> {
-        let res = sqlx::query_as!(
-            User,
-            "SELECT * FROM torrust_users WHERE email = ?",
-            email,
-        )
-            .fetch_one(&self.pool)
-            .await;
-
-        match res {
-            Ok(user) => Some(user),
-            _ => None
-        }
-    }
-
     pub async fn delete_user(&self, user_id: i64) -> Result<(), sqlx::Error> {
         let _res = sqlx::query!(
             "DELETE FROM torrust_users WHERE rowid = ?",
