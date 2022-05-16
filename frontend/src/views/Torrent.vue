@@ -94,7 +94,7 @@
         <div class="py-3 border-t border-slate-200/5"></div>
         <textarea v-if="editingDescription" rows="8" v-model="newDescription" class="input"></textarea>
         <h2 v-if="editingDescription" class="section">Markdown Preview</h2>
-        <MarkdownItVue v-if="editingDescription" :content="newDescription" class="px-4 py-4 max-h-64 overflow-auto md-body max-w-none prose-sm prose-blue bg-slate-800/50 rounded-md" />
+        <MarkdownItVue v-if="editingDescription" :content="newDescription" class="torrust-md px-4 py-4 max-h-64 overflow-auto md-body max-w-none prose-sm prose-blue bg-slate-800/50 rounded-md" />
         <MarkdownItVue v-if="!editingDescription && torrent.description" :content="torrent.description" class="md-body max-w-none prose-sm prose-blue" />
         <span v-if="!editingDescription && !torrent.description" class="text-slate-400 italic">Empty</span>
       </div>
@@ -286,7 +286,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .status {
   @apply px-2 py-1.5 w-1/2 flex flex-row bg-slate-800/50 text-slate-200 capitalize border border-transparent rounded-md text-sm uppercase;
 }
@@ -310,7 +310,9 @@ button.edit {
 textarea.input, input {
   @apply py-2 px-4 bg-slate-800/50 appearance-none w-full text-slate-200 rounded-md leading-tight focus:outline-none;
 }
+</style>
 
+<style>
 .markdown-body {
   @apply text-slate-400;
 }
