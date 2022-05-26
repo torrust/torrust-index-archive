@@ -7,6 +7,7 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
     state: {
+	isSignUp: false,
         sideBarOpen: false,
         categories: [],
         categoryFilters: [],
@@ -22,7 +23,7 @@ export default new Vuex.Store({
             },
             net: {
                 port: 0,
-                base_url: null
+                base_url: ""
             },
             auth: {
                 min_password_length: 0,

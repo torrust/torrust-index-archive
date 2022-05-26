@@ -71,7 +71,7 @@
           <input type='number' v-model="settings.net.port">
         </div>
 
-        <label>Domain [optional]</label>
+        <label>Domain </label>
         <div class="setting-input-container">
           <input type='text' v-model="settings.net.base_url" placeholder="optional">
         </div>
@@ -180,7 +180,7 @@ export default {
       },
       net: {
         port: 0,
-        base_url: null
+        base_url: ""
       },
       auth: {
         min_password_length: 0,

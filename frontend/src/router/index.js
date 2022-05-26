@@ -6,6 +6,7 @@ import VueRouter from "vue-router";
 import Torrents from "../views/Torrents.vue";
 import Welcome from "../views/Welcome.vue";
 import Settings from "../views/settings/Settings.vue";
+import Register from "../views/Register.vue";
 
 const routes = [
     {
@@ -43,6 +44,11 @@ const routes = [
                 name: 'Upload Torrent',
                 component: TorrentUpload
             },
+	    {
+		path: 'register',
+		name: 'Register User',
+		component: Register
+	    },
         ]
     }
 ];

@@ -116,9 +116,10 @@
             <button v-if="isSignUp" class="px-2 font-semibold text-slate-400 hover:text-slate-200 transition duration-200" @click="toggleMode">
               Already have an account? Sign in
             </button>
-            <button v-else class="px-2 font-semibold text-slate-400 hover:text-slate-200 transition duration-200" @click="toggleMode">
+            <!-- <button v-else class="px-2 font-semibold text-slate-400 hover:text-slate-200 transition duration-200" @click="toggleMode"> 
               Don't have an account? Sign up
             </button>
+-->
           </div>
         </div>
       </div>
@@ -134,11 +135,14 @@ export default {
   name: "AuthenticationModal",
   computed: {
     ...mapState({
-      authModalOpen: state => state.auth.authModalOpen
-    })
+      authModalOpen: state => state.auth.authModalOpen,
+    }),
+    isSignUp() {
+	return this.$store.state.isSignUp
+    }
   },
   data: () => ({
-    isSignUp: false,
+    //isSignUp: false,
     form: {
       username: "",
       email: "",
@@ -152,6 +156,8 @@ export default {
     },
     submit() {
       if (this.isSignUp) {
+	let url = new URL(window.location.href);
+	this.form.invite_code = url.searchParams.get('invite_code');
         this.$store.dispatch('register', this.form).then(() => {
           this.toggleMode();
         });
