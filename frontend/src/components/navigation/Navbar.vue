@@ -14,7 +14,7 @@
               </router-link>
             </div>
 
-            <div v-if="this.$store.getters.isAdministrator" class="ml-4 flex items-center">
+            <div v-if="this.$store.getters.isAdministrator&&this.$store.state.settings.invite_only" class="ml-4 flex items-center">
               <Invite />
             </div>
 

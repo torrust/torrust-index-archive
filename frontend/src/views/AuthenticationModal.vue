@@ -116,10 +116,9 @@
             <button v-if="isSignUp" class="px-2 font-semibold text-slate-400 hover:text-slate-200 transition duration-200" @click="toggleMode">
               Already have an account? Sign in
             </button>
-            <!-- <button v-else class="px-2 font-semibold text-slate-400 hover:text-slate-200 transition duration-200" @click="toggleMode"> 
+            <button v-else class="px-2 font-semibold text-slate-400 hover:text-slate-200 transition duration-200" @click="toggleMode"> 
               Don't have an account? Sign up
             </button>
--->
           </div>
         </div>
       </div>
@@ -139,6 +138,9 @@ export default {
     }),
     isSignUp() {
 	return this.$store.state.isSignUp
+    },
+    isInviteOnly() {
+	return this.$store.state.settings
     }
   },
   data: () => ({
@@ -152,7 +154,7 @@ export default {
   }),
   methods: {
     toggleMode() {
-      this.isSignUp = !this.isSignUp;
+      this.$store.state.isSignUp = !this.isSignUp;
     },
     submit() {
       if (this.isSignUp) {

@@ -48,17 +48,28 @@ pub struct Login {
 }
 
 pub async fn register(req: HttpRequest, payload: web::Json<Register>, app_data: WebAppData) -> ServiceResult<impl Responder> {
+
     let settings = app_data.cfg.settings.read().await;
-    
-    let invite_code = match &payload.invite_code {
-        Some(code) => code,
-        None => return Err(ServiceError::InvalidInviteCode)
-    };
-    let code = app_data.database.verify_invite_code(invite_code).await;
-    let code = match code {
-        None => return Err(ServiceError::InvalidInviteCode),
-        Some(c) => c,
-    };
+
+    if !settings.auth.registration_enabled {
+        return Err(ServiceError::ClosedForRegistration)
+    }
+
+    // if invite_code is None after this block invite_only must be disabled
+    let mut invite_code = None;
+    if settings.auth.invite_only {
+        let code = match &payload.invite_code {
+            Some(code) => code,
+            None => return Err(ServiceError::InvalidInviteCode)
+        };
+        let code = app_data.database.verify_invite_code(code).await;
+        invite_code = match code {
+            None => return Err(ServiceError::InvalidInviteCode),
+            Some(c) => Some(c),
+        };
+    }
+
+
     if payload.password != payload.confirm_password {
         return Err(ServiceError::PasswordsDontMatch);
     }
@@ -135,18 +146,20 @@ pub async fn register(req: HttpRequest, payload: web::Json<Register>, app_data: 
             let _ = app_data.database.delete_user(user_id).await;
             return Err(ServiceError::FailedToSendVerificationEmail)
         }
-    } else {
-
     }
-
+   
+    if let Some(invite_code) = &invite_code {
     //now that the user is created it is safe to invalidate the invite link
-    let _res_make_admin = sqlx::query!("UPDATE invites SET username = $1 WHERE key=$2", payload.username ,code.key)
+        if settings.auth.invite_only {
+            let _res = sqlx::query!("UPDATE invites SET username = $1 WHERE key=$2", payload.username ,invite_code.key)
             .execute(&app_data.database.pool)
             .await;
  
-    let _res_make_admin = sqlx::query!("UPDATE invites SET valid=FALSE WHERE username=?", payload.username)
-            .execute(&app_data.database.pool)
-            .await;
+            let _res = sqlx::query!("UPDATE invites SET valid=FALSE WHERE username=?", payload.username)
+                .execute(&app_data.database.pool)
+                .await;
+        }
+    }
  
     Ok(HttpResponse::Ok())
 }

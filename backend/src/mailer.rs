@@ -132,10 +132,8 @@ If this account wasn't made by you, you can ignore this email.
         )
             .unwrap();
 
-        let mut base_url = base_url.clone();
-        if let Some(cfg_base_url) = &settings.net.base_url {
-            base_url = cfg_base_url;
-        }
+        //let mut base_url = base_url.clone();
+        let base_url = &settings.net.base_url;
 
         format!("{}/user/verify/{}", base_url, token)
     }

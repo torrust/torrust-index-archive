@@ -28,6 +28,8 @@ pub struct Auth {
     pub min_password_length: usize,
     pub max_password_length: usize,
     pub secret_key: String,
+    pub invite_only: bool,
+    pub registration_enabled: bool
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -94,7 +96,9 @@ impl Configuration {
             auth: Auth {
                 min_password_length: 6,
                 max_password_length: 64,
-                secret_key: "MaxVerstappenWC2021".to_string()
+                secret_key: "MaxVerstappenWC2021".to_string(),
+                invite_only: false,
+                registration_enabled: true
             },
             database: Database {
                 connect_url: "sqlite://data.db?mode=rwc".to_string(),
