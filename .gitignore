@@ -11,3 +11,6 @@
 /backend/data.db-wal
 /backend/uploads
 /backend/target
+/backend/DATABASE
+/backend/DATABASE-shm
+/backend/DATABASE-wal
