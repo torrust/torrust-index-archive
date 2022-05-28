@@ -36,6 +36,9 @@ cd torrust/target
 ./torrust
 ```
 
+Note## We recommond you to use GoBang to manage database (A cross-platform TUI database management tool written in Rust)
+[GoBang](https://github.com/TaKO8Ki/gobang)
+
 ## Contributing
 Please report any bugs you find to our issue tracker. Ideas and feature requests are welcome as well!
 Any pull request targeting existing issues would be very much appreciated.
