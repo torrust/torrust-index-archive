@@ -14,3 +14,4 @@
 /backend/DATABASE
 /backend/DATABASE-shm
 /backend/DATABASE-wal
+/backend/src/config.toml
