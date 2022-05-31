@@ -49,12 +49,14 @@
               ...
             </span>
           </template>
-<!--          <button v-else v-for="i in 5" :key="i" v-show="i < totalPages"-->
-<!--                  @click="goToPage(i)"-->
-<!--                  :disabled="i === currentPage"-->
-<!--                  class="page-button">-->
-<!--            {{ i }}-->
-<!--          </button>-->
+          <template v-else>
+            <button v-for="i in 5" :key="i"
+                  @click="goToPage(i)"
+                  :disabled="i === currentPage"
+                  class="page-button">
+                  {{ i }}
+            </button>
+          </template>
 
           <template v-if="currentPage > 4 && currentPage < totalPages-3">
             <button v-for="i in 2" :key="currentPage - 3 + i"
