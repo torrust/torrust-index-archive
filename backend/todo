@@ -1,2 +1,0 @@
-create table invites(valid, user, code)
-database requre invite code from url encoded params
