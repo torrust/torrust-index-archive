@@ -4,6 +4,7 @@
 /frontend/dist
 /frontend/.env
 
+
 /backend/.env
 /backend/config.toml
 /backend/data.db
