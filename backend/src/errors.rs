@@ -106,6 +106,9 @@ pub enum ServiceError {
 
     #[display(fmt = "Category already exists..")]
     CategoryExists,
+
+    #[display(fmt = "Invite invite link")]
+    InvalidInviteCode
 }
 
 #[derive(Serialize, Deserialize)]
@@ -156,6 +159,8 @@ impl ResponseError for ServiceError {
             ServiceError::TrackerOffline => StatusCode::INTERNAL_SERVER_ERROR,
 
             ServiceError::CategoryExists => StatusCode::BAD_REQUEST,
+
+            ServiceError::InvalidInviteCode => StatusCode::BAD_REQUEST,
 
             _ => StatusCode::INTERNAL_SERVER_ERROR
         }

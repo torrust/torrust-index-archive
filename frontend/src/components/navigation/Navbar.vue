@@ -13,9 +13,15 @@
                 <span class="block md:hidden">+</span>
               </router-link>
             </div>
+
+            <div v-if="this.$store.getters.isAdministrator" class="ml-4 flex items-center">
+              <Invite />
+            </div>
+
             <div class="ml-4 flex items-center">
               <Profile />
             </div>
+ 
           </div>
         </div>
       </div>
@@ -48,10 +54,11 @@ import Profile from "./Profile.vue";
 import Logo from "../Logo.vue";
 import Breadcrumb from "../Breadcrumb.vue";
 import Sidebar from "./Sidebar.vue";
+import Invite from "./Invite.vue";
 
 export default {
   name: 'Navbar',
-  components: {Sidebar, Breadcrumb, Profile, Logo},
+  components: {Sidebar, Breadcrumb, Profile, Logo, Invite},
   computed: {
     ...mapState({})
   },
