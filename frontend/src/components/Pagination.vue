@@ -7,7 +7,7 @@
           Showing
           <span class="font-medium">{{ (currentPage * pageSize) - pageSize }}</span>
           to
-          <span class="font-medium">{{ currentPage * pageSize }}</span>
+          <span class="font-medium">{{ Math.min(currentPage * pageSize, totalResults) }}</span>
           of
           <span class="font-medium">{{ totalResults }}</span>
           results
