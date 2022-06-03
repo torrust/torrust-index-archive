@@ -7,7 +7,7 @@
           Showing
           <span class="font-medium">{{ (currentPage * pageSize) - pageSize }}</span>
           to
-          <span class="font-medium">{{ currentPage * pageSize }}</span>
+          <span class="font-medium">{{ Math.min(currentPage * pageSize, totalResults) }}</span>
           of
           <span class="font-medium">{{ totalResults }}</span>
           results
@@ -38,33 +38,57 @@
             </svg>
           </button>
 
-          <template v-if="currentPage > 4">
-            <button
-                @click="goToFirstPage"
-                class="page-button">
-              1
+          <button @click="goToFirstPage"
+              class="page-button"
+              :disabled="currentPage === 1">
+            1
+          </button>
+
+          <template v-if="totalPages < 7">
+            <button v-for="i in totalPages - 2" :key="i"
+                  @click="goToPage(i + 1)"
+                  :disabled="i + 1 === currentPage"
+                  class="page-button">
+                  {{ i + 1 }}
             </button>
-            <span
+          </template>
+
+          <template v-else-if="currentPage <= 4">
+            <button v-for="i in 5" :key="i + 1"
+                  @click="goToPage(i + 1)"
+                  :disabled="i + 1 === currentPage"
+                  class="page-button">
+                  {{ i + 1 }}
+            </button>
+            <span v-if="totalPages > 7"
                 class="page-button">
               ...
             </span>
           </template>
-<!--          <button v-else v-for="i in 5" :key="i" v-show="i < totalPages"-->
-<!--                  @click="goToPage(i)"-->
-<!--                  :disabled="i === currentPage"-->
-<!--                  class="page-button">-->
-<!--            {{ i }}-->
-<!--          </button>-->
 
-          <template v-if="currentPage > 4 && currentPage < totalPages-3">
+          <template v-else-if="currentPage > totalPages - 4">
+            <span v-if="totalPages > 7"
+              class="page-button">
+              ...
+            </span>
+            <button v-for="i in 5" :key="totalPages - 6 + i"
+                  @click="goToPage(totalPages - 6 + i)"
+                  :disabled="totalPages - 6 + i === currentPage"
+                  class="page-button">
+                  {{ totalPages - 6 + i }}
+            </button>
+          </template>
+
+          <template v-else>
+            <span class="page-button">
+              ...
+            </span>
             <button v-for="i in 2" :key="currentPage - 3 + i"
                     @click="goToPage(currentPage - 3 + i)"
                     class="page-button">
               {{ currentPage - 3 + i }}
             </button>
-            <button
-                :key="currentPage"
-                disabled
+            <button disabled
                 class="page-button">
               {{ currentPage }}
             </button>
@@ -73,27 +97,17 @@
                     class="page-button">
               {{ currentPage + i }}
             </button>
-          </template>
-
-          <template v-if="currentPage < totalPages-3">
-            <span
-                class="page-button">
+            <span class="page-button">
               ...
             </span>
-            <button
-                @click="goToLastPage"
-                class="page-button">
-              {{ totalPages }}
-            </button>
           </template>
-          <template v-else>
-            <button v-for="i in 5" :key="totalPages-5+i" v-show="totalPages-5+i > 0"
-                    @click="goToPage(totalPages-5+i)"
-                    :disabled="totalPages-5+i === currentPage"
-                    class="page-button">
-              {{ totalPages-5+i }}
-            </button>
-          </template>
+
+          <button v-if="totalPages > 1"
+              @click="goToLastPage"
+              :disabled="totalPages === currentPage"
+              class="page-button">
+            {{ totalPages }}
+          </button>
 
           <button
               @click="goToNextPage()"
