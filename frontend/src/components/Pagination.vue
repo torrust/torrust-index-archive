@@ -45,7 +45,7 @@
           </button>
 
           <template v-if="totalPages < 7">
-            <button v-for="i in totalPages - 2" :key="i"
+            <button v-for="i in Math.max(totalPages - 2,0)" :key="i"
                   @click="goToPage(i + 1)"
                   :disabled="i + 1 === currentPage"
                   class="page-button">
