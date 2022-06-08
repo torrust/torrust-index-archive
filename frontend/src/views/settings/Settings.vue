@@ -34,6 +34,24 @@
           <input v-model="newCategory" type='text' placeholder='Enter category'>
           <button @click="addCategory" :disabled="!newCategory" class="button ml-2 px-4 bg-sky-600 hover:bg-sky-500 text-white rounded-md disabled:opacity-50">Add</button>
         </div>
+
+        <label>Pages</label>
+        <ul class="py-2">
+          <li v-for="(page, index) in pagesState" :key="index">
+            <div class="py-2 px-4 mt-2 bg-slate-800 rounded-md flex flex-row">
+              <button @click="selectPage(page.route)" class="text-white">{{ page.title }}</button>
+              <svg xmlns="http://www.w3.org/2000/svg" @click="deletePage(page.route)" class="h-6 w-6 ml-auto px-1 rounded-lg bg-opacity-10 text-red-400 hover:text-red-500 text-center cursor-pointer" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+            </div>
+          </li>
+        </ul>
+ 
+
+        <div class="mt-2 flex flex-row">
+          <button @click="selectPage('new')" class="button ml-2 px-4 py-2 bg-sky-600 hover:bg-sky-500 text-white rounded-md disabled:opacity-50">Add page</button>
+        </div>
+
       </div>
 
       <div id="advanced-settings">
@@ -206,7 +224,7 @@ export default {
     }
   }),
   computed: {
-    ...mapState(['categories']),
+    ...mapState(['categories', 'pages']),
     settingsChanged() {
       return JSON.stringify(this.$store.state.settings) === JSON.stringify(this.settings);
     },
@@ -215,6 +233,9 @@ export default {
     },
     categoriesState() {
       return this.$store.state.categories;
+    },
+    pagesState() {
+      return this.$store.state.pages;
     }
   },
   methods: {
@@ -232,6 +253,14 @@ export default {
       }).catch(() => {
       });
     },
+    deletePage(route) {
+      HttpService.delete(`/page`, { route }, () => {
+        this.$store.dispatch('getPages');
+      }).catch(() => {} );
+    },
+    selectPage(page) {
+       this.$router.push(`/${page}`)
+    },
     saveSettings() {
       this.savingSettings = true;
       HttpService.post(`/settings`, this.settings, () => {
@@ -248,6 +277,7 @@ export default {
   beforeMount() {
     this.$store.dispatch('getSettings');
     this.$store.dispatch('getCategories');
+    this.$store.dispatch('getPages');
   },
   watch: {
     settingsState() {

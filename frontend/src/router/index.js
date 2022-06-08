@@ -6,6 +6,8 @@ import VueRouter from "vue-router";
 import Torrents from "../views/Torrents.vue";
 import Welcome from "../views/Welcome.vue";
 import Settings from "../views/settings/Settings.vue";
+import Pages from "../views/Pages.vue";
+import CreatePage from "../views/CreatePage.vue";
 
 const routes = [
     {
@@ -43,6 +45,16 @@ const routes = [
                 name: 'Upload Torrent',
                 component: TorrentUpload
             },
+	    {
+		path: 'new',
+		name: 'Create Page',
+		component: CreatePage
+	    },
+	    {
+		path: ':page',
+		name: '',
+		component: Pages
+	    }
         ]
     }
 ];

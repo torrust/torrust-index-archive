@@ -106,6 +106,12 @@ pub enum ServiceError {
 
     #[display(fmt = "Category already exists..")]
     CategoryExists,
+
+    #[display(fmt = "Route does not exists")]
+    RouteNotFound,
+
+    #[display(fmt = "Page Already exists")]
+    PageAlreadyExists,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -157,6 +163,9 @@ impl ResponseError for ServiceError {
 
             ServiceError::CategoryExists => StatusCode::BAD_REQUEST,
 
+            ServiceError::RouteNotFound => StatusCode::NOT_FOUND,
+
+            ServiceError::PageAlreadyExists => StatusCode::BAD_REQUEST,
             _ => StatusCode::INTERNAL_SERVER_ERROR
         }
     }

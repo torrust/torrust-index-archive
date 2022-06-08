@@ -9,6 +9,7 @@ export default new Vuex.Store({
     state: {
         sideBarOpen: false,
         categories: [],
+	pages: [],
         categoryFilters: [],
         settings: {
             website: {
@@ -62,6 +63,9 @@ export default new Vuex.Store({
         setCategoryFilters(state, categoryFilters) {
             Vue.set(state, 'categoryFilters', categoryFilters);
         },
+	setPages(state, pages) {
+	    Vue.set(state, 'pages', pages);
+	},
         setSettings(state, settings) {
             Vue.set(state, 'settings', settings);
             window.document.title = settings.website.name;
@@ -87,6 +91,11 @@ export default new Vuex.Store({
             HttpService.get('/category', (res) => {
                 commit('setCategories', res.data.data);
             }).catch(() => {});
+        },
+	getPages({commit}){
+	    HttpService.get('/pages', (res) => {
+		commit('setPages', res.data.data);
+	    }).catch(() => {});
         },
         getSettings({commit}) {
             HttpService.get('/settings', (res) => {

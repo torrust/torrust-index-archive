@@ -46,6 +46,14 @@
             </button>
           </li>
         </ul>
+        <h3 class="py-2 text-slate-400 font-semibold">Pages</h3>
+        <ul>
+          <li v-for="page in pages">
+            <button @click="selectPage(page.route)" :class="{ 'active': $route.name === page.title }">
+              <span>{{ titleCase(page.title.toString()) }}</span>
+            </button>
+          </li>
+        </ul>
       </li>
     </ul>
   </nav>
@@ -65,9 +73,14 @@ export default {
       this.$store.commit('setCategories', categories);
     }).catch(() => {
     });
+    HttpService.get('/pages', (res) => {
+      const pages = res.data.data;
+      this.$store.commit('setPages', pages);
+    }).catch(() => {
+    }); 
   },
   computed: {
-    ...mapState(['sideBarOpen', 'categories', 'categoryFilters'])
+    ...mapState(['sideBarOpen', 'categories', 'categoryFilters', 'pages'])
   },
   data: () => ({
     searchQuery: '',
@@ -86,6 +99,9 @@ export default {
       } else if (this.$route.params.sorting) {
         this.$router.replace(`/torrents`)
       }
+    },
+    selectPage(page) {
+       this.$router.push(`/${page}`)
     },
     goTo(url) {
       this.$store.commit('setCategoryFilters', []);

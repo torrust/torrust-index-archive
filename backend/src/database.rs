@@ -6,6 +6,7 @@ use crate::models::torrent::TorrentListing;
 use crate::utils::time::current_time;
 use crate::models::tracker_key::TrackerKey;
 use serde::Serialize;
+use crate::models::page::Page;
 
 #[derive(Debug, Serialize)]
 pub struct TorrentCompact {
@@ -194,6 +195,59 @@ impl Database {
         match res {
             Ok(v) => Some(v.name),
             Err(_) => None
+        }
+    }
+
+    pub async fn get_pages(&self) -> Option<Vec<Page>> {
+        let res = sqlx::query_as!(Page, "SELECT * FROM torrust_pages")
+            .fetch_all(&self.pool)
+            .await;
+
+        match res {
+            Ok(v) => Some(v),
+            Err(_) => None,
+        }
+    }
+
+    pub async fn get_page_by_route(&self, route: &str) -> Option<Page> {
+        let res = sqlx::query_as!(Page, "SELECT * FROM torrust_pages WHERE route=?", route)
+            .fetch_one(&self.pool)
+            .await;
+
+        match res {
+            Ok(v) => Some(v),
+            Err(g) => {
+                println!("{:?}", g);
+                return None;
+            }
+        }
+    }
+
+    pub async fn insert_page(
+        &self,
+        route: &str,
+        title: &str,
+        description: &Option<String>,
+    ) -> Result<(), ServiceError> {
+        if let Some(pages) = self.get_pages().await {
+            if pages.iter().any(|i| i.route == route) {
+                return Err(ServiceError::PageAlreadyExists);
+            }
+        }
+        let current_time = current_time() as i64;
+        let res = sqlx::query!(
+            "INSERT INTO torrust_pages (route, title, description, creation_date)
+                    VALUES ($1, $2, $3, $4)",
+            route,
+            title,
+            description,
+            current_time
+        )
+        .execute(&self.pool)
+        .await;
+        match res {
+            Ok(_) => Ok(()),
+            Err(_) => Err(ServiceError::InternalServerError),
         }
     }
 }

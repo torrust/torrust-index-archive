@@ -1,6 +1,7 @@
 use actix_web::web;
 
 pub mod user;
+pub mod page;
 pub mod torrent;
 pub mod category;
 pub mod settings;
@@ -10,4 +11,5 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
     torrent::init_routes(cfg);
     category::init_routes(cfg);
     settings::init_routes(cfg);
+    page::init_routes(cfg);
 }
