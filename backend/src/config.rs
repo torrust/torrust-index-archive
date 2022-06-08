@@ -20,7 +20,7 @@ pub struct Tracker {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Network {
     pub port: u16,
-    pub base_url: Option<String>,
+    pub base_url: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -28,6 +28,8 @@ pub struct Auth {
     pub min_password_length: usize,
     pub max_password_length: usize,
     pub secret_key: String,
+    pub invite_only: bool,
+    pub registration_enabled: bool
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -89,12 +91,14 @@ impl Configuration {
             },
             net: Network {
                 port: 3000,
-                base_url: None
+                base_url: "http://localhost".to_string()
             },
             auth: Auth {
                 min_password_length: 6,
                 max_password_length: 64,
-                secret_key: "MaxVerstappenWC2021".to_string()
+                secret_key: "MaxVerstappenWC2021".to_string(),
+                invite_only: false,
+                registration_enabled: true
             },
             database: Database {
                 connect_url: "sqlite://data.db?mode=rwc".to_string(),

@@ -1,5 +1,6 @@
 use actix_web::{web, Responder, HttpResponse, HttpRequest};
 use serde::{Deserialize, Serialize};
+use rand::{distributions::Alphanumeric, Rng};
 use pbkdf2::{
     password_hash::{
         rand_core::OsRng,
@@ -26,7 +27,9 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
                 .route(web::delete().to(ban_user)))
             .service(web::resource("/verify/{token}")
                 .route(web::get().to(verify_user)))
-    );
+            .service(web::resource("/create_invite")
+                .route(web::get().to(create_invite)))
+            );
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -35,6 +38,7 @@ pub struct Register {
     pub email: String,
     pub password: String,
     pub confirm_password: String,
+    pub invite_code: Option<String>
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -44,7 +48,27 @@ pub struct Login {
 }
 
 pub async fn register(req: HttpRequest, payload: web::Json<Register>, app_data: WebAppData) -> ServiceResult<impl Responder> {
+
     let settings = app_data.cfg.settings.read().await;
+
+    if !settings.auth.registration_enabled {
+        return Err(ServiceError::ClosedForRegistration)
+    }
+
+    // if invite_code is None after this block invite_only must be disabled
+    let mut invite_code = None;
+    if settings.auth.invite_only {
+        let code = match &payload.invite_code {
+            Some(code) => code,
+            None => return Err(ServiceError::InvalidInviteCode)
+        };
+        let code = app_data.database.verify_invite_code(code).await;
+        invite_code = match code {
+            None => return Err(ServiceError::InvalidInviteCode),
+            Some(c) => Some(c),
+        };
+    }
+
 
     if payload.password != payload.confirm_password {
         return Err(ServiceError::PasswordsDontMatch);
@@ -122,10 +146,21 @@ pub async fn register(req: HttpRequest, payload: web::Json<Register>, app_data: 
             let _ = app_data.database.delete_user(user_id).await;
             return Err(ServiceError::FailedToSendVerificationEmail)
         }
-    } else {
-
     }
-
+   
+    if let Some(invite_code) = &invite_code {
+    //now that the user is created it is safe to invalidate the invite link
+        if settings.auth.invite_only {
+            let _res = sqlx::query!("UPDATE invites SET username = $1 WHERE key=$2", payload.username ,invite_code.key)
+            .execute(&app_data.database.pool)
+            .await;
+ 
+            let _res = sqlx::query!("UPDATE invites SET valid=FALSE WHERE username=?", payload.username)
+                .execute(&app_data.database.pool)
+                .await;
+        }
+    }
+ 
     Ok(HttpResponse::Ok())
 }
 
@@ -201,6 +236,24 @@ pub async fn verify_user(req: HttpRequest, app_data: WebAppData) -> String {
     }
 
     String::from("Email verified, you can close this page.")
+}
+
+pub async fn create_invite(req: HttpRequest, app_data: WebAppData) -> ServiceResult<impl Responder> {
+    let user = app_data.auth.get_user_from_request(&req).await?;
+
+    if !user.administrator { return Err(ServiceError::Unauthorized ) }
+    
+    let invite_code: String = rand::thread_rng()
+        .sample_iter(&Alphanumeric)
+        .take(32)
+        .map(char::from)
+        .collect();
+    let res = sqlx::query!("INSERT INTO invites (valid, key)
+                            VALUES (true, ?)", invite_code)
+        .execute(&app_data.database.pool)
+        .await;
+    if let Err(_) = res { return Err(ServiceError::UsernameNotFound) }
+    Ok(invite_code)
 }
 
 pub async fn ban_user(req: HttpRequest, app_data: WebAppData) -> ServiceResult<impl Responder> {

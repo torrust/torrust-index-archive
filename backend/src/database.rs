@@ -5,6 +5,7 @@ use crate::errors::ServiceError;
 use crate::models::torrent::TorrentListing;
 use crate::utils::time::current_time;
 use crate::models::tracker_key::TrackerKey;
+use crate::models::invite::Invite;
 use serde::Serialize;
 
 #[derive(Debug, Serialize)]
@@ -193,6 +194,38 @@ impl Database {
 
         match res {
             Ok(v) => Some(v.name),
+            Err(_) => None
+        }
+    }
+
+    pub async fn get_invite_with_id(&self, invite_id: i64) -> Option<Invite> {
+        let res = sqlx::query_as!(
+            Invite, 
+            "SELECT * FROM invites WHERE invite_id=?", 
+            invite_id
+        )
+            .fetch_one(&self.pool)
+            .await;
+        match res {
+            Ok(v) => Some(v),
+            Err(_) => None
+        }
+    }
+    pub async fn verify_invite_code(&self, invite_code: &str) -> Option<Invite> {
+        let res = sqlx::query_as!(
+            Invite,
+            "SELECT * FROM invites WHERE key=?",
+            invite_code
+            )
+                .fetch_one(&self.pool)
+                .await;
+        if let Ok(code) = &res {
+            if !code.valid {
+                return None;
+            }
+        }
+        match res {
+            Ok(v) => Some(v),
             Err(_) => None
         }
     }

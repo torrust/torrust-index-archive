@@ -1,0 +1,32 @@
+[website]
+name = "Torrust"
+
+[tracker]
+url = "udp://localhost:6969"
+api_url = "http://localhost:1212"
+token = "MyAccessToken"
+token_valid_seconds = 7257600
+
+[net]
+port = 3000
+
+[auth]
+min_password_length = 6
+max_password_length = 64
+secret_key = "MaxVerstappenWC2021"
+
+[database]
+connect_url = "sqlite://data.db?mode=rwc"
+torrent_info_update_interval = 3600
+
+[storage]
+upload_path = "./uploads"
+
+[mail]
+email_verification_enabled = false
+from = "example@email.com"
+reply_to = "noreply@email.com"
+username = ""
+password = ""
+server = ""
+port = 25

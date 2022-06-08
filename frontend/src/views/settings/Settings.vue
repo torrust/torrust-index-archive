@@ -71,16 +71,22 @@
           <input type='number' v-model="settings.net.port">
         </div>
 
-        <label>Domain [optional]</label>
+        <label>Domain </label>
         <div class="setting-input-container">
           <input type='text' v-model="settings.net.base_url" placeholder="optional">
         </div>
 
         <!-- Authentication -->
         <h3>Authentication</h3>
-        <label>Min. Password Length</label>
+
+        <label>Registration Enabled (true or false)</label>
         <div class="setting-input-container">
-          <input type='number' v-model="settings.auth.min_password_length">
+          <input type='text' :value="settings.auth.registration_enabled" @input="event =>settings.auth.registration_enabled=(event.target.value==='true')">
+        </div>
+        
+	<label>Invite Only (true or false)</label>
+        <div class="setting-input-container">
+          <input type='text' :value="settings.auth.invite_only" @input="event =>settings.auth.invite_only=(event.target.value==='true')" :disabled="!settings.auth.registration_enabled">
         </div>
 
         <label>Max. Password Length</label>
@@ -114,9 +120,9 @@
 
         <!-- Mail -->
         <h3>Mail</h3>
-        <label>Email Verification Enabled (true or false)</label>
+        <label>Email Verification Enabled (true or false) [restart required] </label>
         <div class="setting-input-container">
-          <input type='text' v-model="settings.mail.email_verification_enabled">
+          <input type='text' :value="settings.mail.email_verification_enabled" @input="event =>settings.mail.email_verification_enabled=(event.target.value==='true')">
         </div>
 
         <label>Server</label>
@@ -180,9 +186,11 @@ export default {
       },
       net: {
         port: 0,
-        base_url: null
+        base_url: ""
       },
       auth: {
+	registration_enabled: true,
+	invite_only: false,
         min_password_length: 0,
         max_password_length: 0,
         secret_key: ""
