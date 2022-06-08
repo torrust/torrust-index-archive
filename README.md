@@ -1,11 +1,42 @@
-# Torrust
+# torrust-index
 ![Test](https://github.com/torrust/torrust/actions/workflows/test.yml/badge.svg)
 ![Build](https://github.com/torrust/torrust/actions/workflows/build.yml/badge.svg)
 
 ## Project Description
+torrust-index is a feature-rich torrent indexing website for the [torrust-tracker](https://github.com/torrust/torrust-tracker).
 
-Torrust is a suite of client-server software for hosting online torrent indexes.
-**Torrust only works with the torrust tracker, it does not work with other trackers currently.**
+### Update 08-06-2022 (only for existing torrust-index users):
+We have recently moved to a new project structure for the torrust-index project. The backend and frontend folders have been moved into their own repositories: [backend](https://github.com/torrust/torrust-index-backend) & [frontend](https://github.com/torrust/torrust-index-frontend). These repositories have now been included in this repository as submodules, and they have replaced the old backend and frontend sub folders. This however may lead to problems when updating from an older version of torrust (now torrust-index). __To update from an older version of torrust__:
+1. Rename the old backend and frontend sub folders:
+```bash
+mv backend backend-old
+mv frontend frontend-old
+```
+
+2. Pull the latest torrust-index and its submodules:
+```bash
+git pull
+git pull --recurse-submodules
+```
+
+3. Copy your old config and database over:
+```bash
+cp backend-old/config.toml backend/config.toml
+cp backend-old/data.db backend/data.db
+cp frontend-old/.env frontend/.env
+```
+> You might also have to copy your old .env file over or do `cd backend` and `echo "DATABASE_URL=sqlite://data.db?mode=rwc" > .env
+`
+
+4. Rebuild the binaries and frontend:
+```bash
+cd backend
+cargo build --release
+cd ../frontend
+npm i
+npm run build
+```
+> NOTE: The backend binaries have been renamed to `torrust-index-backend`. To run them, do: `./target/release/torrust-index-backend`
 
 ### Features
 * [X] User authentication
