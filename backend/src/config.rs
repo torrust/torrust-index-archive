@@ -20,7 +20,7 @@ pub struct Tracker {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Network {
     pub port: u16,
-    pub base_url: Option<String>,
+    pub base_url: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -89,7 +89,7 @@ impl Configuration {
             },
             net: Network {
                 port: 3000,
-                base_url: None
+                base_url: "http://localhost".to_string()
             },
             auth: Auth {
                 min_password_length: 6,
