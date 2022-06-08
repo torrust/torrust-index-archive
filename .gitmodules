@@ -1,6 +1,8 @@
 [submodule "backend"]
 	path = backend
 	url = https://github.com/torrust/torrust-index-backend
+	branch = main
 [submodule "frontend"]
 	path = frontend
 	url = https://github.com/torrust/torrust-index-frontend
+	branch = main
