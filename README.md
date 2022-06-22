@@ -2,8 +2,6 @@
 
 ![README HEADER](./img/Torrust_Repo_Index_Readme_Header-20220615.jpg)
 
-
-
 ![Open Source](https://badgen.net/badge/Open%20Source/100%25/DA2CE7)
 ![Cool](https://badgen.net/badge/Cool/100%25/FF7F50)
 
