@@ -1,3 +1,5 @@
+moved to piracy-wiki
+
 # torrust-index
 
 ![README HEADER](./img/Torrust_Repo_Index_Readme_Header-20220615.jpg)
